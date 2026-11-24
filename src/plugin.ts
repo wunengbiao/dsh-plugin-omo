@@ -7,7 +7,7 @@ import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import type { HostContext, HostSkillProvider } from "./host.ts"
 import { createOmoProvider } from "./provider.ts"
-import { BUNDLED_SKILL_RANK, listCandidates } from "./skill-catalog.ts"
+import { BUNDLED_SKILL_RANK, countSkillDocuments } from "./skill-catalog.ts"
 import { SKILL_NAME_PATTERN } from "./skill-document.ts"
 
 export const name = "omo"
@@ -107,23 +107,30 @@ export interface OmoPluginInstance {
 /** Register the provider; the returned disposer unregisters it. */
 export function apply(ctx: HostContext, config?: unknown): OmoPluginInstance {
   const normalized = normalizeOmoConfig(config)
-  const provider = createOmoProvider({
-    roots: normalized.roots,
-    disabled: normalized.disabled,
-    rank: normalized.rank,
-    providerName: normalized.providerName,
-  })
+  const provider = createOmoProvider(
+    {
+      roots: normalized.roots,
+      disabled: normalized.disabled,
+      rank: normalized.rank,
+      providerName: normalized.providerName,
+    },
+    ctx.logger,
+  )
   const dispose = ctx.skills.registerProvider(() => provider)
   const missingRoots = normalized.roots.filter((rootPath) => !existsSync(rootPath))
   if (missingRoots.length > 0) {
     ctx.logger?.warn("[dsh-plugin-omo] skill roots missing: " + missingRoots.join(", "))
   }
-  const candidateCount = listCandidates({
-    roots: normalized.roots,
-    disabled: normalized.disabled,
-    rank: normalized.rank,
-    providerName: normalized.providerName,
-  }).length
-  ctx.logger?.info("[dsh-plugin-omo] registered provider " + normalized.providerName + " with " + candidateCount + " skills")
+  // Count documents only. Parsing here would let one malformed SKILL.md fail the whole bundle at
+  // load time, when the registry is the layer that contains a provider failure.
+  let documentCount = 0
+  try {
+    documentCount = countSkillDocuments(normalized.roots)
+  } catch (error) {
+    ctx.logger?.warn("[dsh-plugin-omo] could not count skill documents: " + String(error))
+  }
+  ctx.logger?.info(
+    "[dsh-plugin-omo] registered provider " + normalized.providerName + " over " + documentCount + " skill documents",
+  )
   return { provider, dispose }
 }

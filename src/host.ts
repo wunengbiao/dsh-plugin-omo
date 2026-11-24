@@ -65,10 +65,18 @@ export interface HostSkillLookupOptions {
   readonly signal?: AbortSignal | undefined
 }
 
+/** Candidates that remain loadable while discovery reports itself as incomplete. */
+export interface HostSkillProviderObservation {
+  readonly candidates: readonly HostSkillCandidate[]
+  readonly complete: boolean
+}
+
 /** One source of skills. */
 export interface HostSkillProvider {
   readonly name: string
-  readonly list: (options: HostSkillLookupOptions) => Promise<readonly HostSkillCandidate[]>
+  readonly list: (
+    options: HostSkillLookupOptions,
+  ) => Promise<readonly HostSkillCandidate[] | HostSkillProviderObservation>
   readonly get: (
     candidate: HostSkillCandidate,
     options: HostSkillLookupOptions,

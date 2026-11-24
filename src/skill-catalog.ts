@@ -51,20 +51,68 @@ function readDocument(documentPath: string): SkillDocument {
   return parseSkillDocument(readFileSync(documentPath, "utf8"), documentPath)
 }
 
-/** Discover every skill the configured roots provide, first root wins. */
-export function discoverSkills(options: CatalogOptions): DiscoveredSkill[] {
+/**
+ * Count skill documents without parsing them.
+ *
+ * The plugin logs this at load time, so it must not read frontmatter: a malformed
+ * document has to reject list() (where the registry contains the failure) instead
+ * of failing the whole bundle during apply.
+ */
+export function countSkillDocuments(roots: readonly string[]): number {
+  let count = 0
+  for (const configuredRoot of roots) {
+    const root = resolve(configuredRoot)
+    if (!existsSync(root)) continue
+    for (const entry of readdirSync(root, { withFileTypes: true })) {
+      if (entry.isDirectory()) {
+        if (existsSync(join(root, entry.name, "SKILL.md"))) count += 1
+        continue
+      }
+      if (entry.isFile() && entry.name.endsWith(".md")) count += 1
+    }
+  }
+  return count
+}
+
+/** One document that could not become a candidate, reported instead of thrown. */
+export interface CatalogIssue {
+  readonly documentPath: string
+  readonly message: string
+}
+
+export interface CatalogDiscovery {
+  readonly skills: readonly DiscoveredSkill[]
+  readonly issues: readonly CatalogIssue[]
+}
+
+/**
+ * Discover every skill the configured roots provide, first root wins.
+ *
+ * A malformed document becomes an issue rather than an exception: one broken
+ * SKILL.md in a bundle must not hide every other skill the same provider serves.
+ */
+export function discoverSkills(options: CatalogOptions): CatalogDiscovery {
   const discovered: DiscoveredSkill[] = []
+  const issues: CatalogIssue[] = []
   const ownedBy = new Map<string, string>()
   for (const configuredRoot of options.roots) {
     const root = resolve(configuredRoot)
     if (!existsSync(root)) continue
     const seenInRoot = new Set<string>()
     for (const documentPath of listMarkdownFiles(root)) {
-      const document = readDocument(documentPath)
+      let document: SkillDocument
+      try {
+        document = readDocument(documentPath)
+      } catch (error) {
+        issues.push({ documentPath, message: error instanceof Error ? error.message : String(error) })
+        continue
+      }
       if (seenInRoot.has(document.name)) {
-        throw new Error(
-          "[dsh-plugin-omo] duplicate skill name " + document.name + " in " + root + " (" + documentPath + ")",
-        )
+        issues.push({
+          documentPath,
+          message: "[dsh-plugin-omo] duplicate skill name " + document.name + " in " + root,
+        })
+        continue
       }
       seenInRoot.add(document.name)
       if (ownedBy.has(document.name)) continue
@@ -72,7 +120,10 @@ export function discoverSkills(options: CatalogOptions): DiscoveredSkill[] {
       discovered.push({ documentPath, root, document })
     }
   }
-  return discovered.sort((left, right) => left.document.name.localeCompare(right.document.name))
+  return {
+    skills: discovered.sort((left, right) => left.document.name.localeCompare(right.document.name)),
+    issues,
+  }
 }
 
 /** Build the catalog candidate for one discovered skill. */
@@ -94,10 +145,19 @@ export function toCandidate(entry: DiscoveredSkill, options: CatalogOptions): Ho
 }
 
 /** Catalog listing for the registry, with the disabled set applied. */
-export function listCandidates(options: CatalogOptions): HostSkillCandidate[] {
-  return discoverSkills(options)
-    .filter((entry) => !options.disabled.has(entry.document.name))
-    .map((entry) => toCandidate(entry, options))
+export function listCandidates(options: CatalogOptions): CatalogListing {
+  const discovery = discoverSkills(options)
+  return {
+    candidates: discovery.skills
+      .filter((entry) => !options.disabled.has(entry.document.name))
+      .map((entry) => toCandidate(entry, options)),
+    issues: discovery.issues,
+  }
+}
+
+export interface CatalogListing {
+  readonly candidates: readonly HostSkillCandidate[]
+  readonly issues: readonly CatalogIssue[]
 }
 
 function isCatalogLocator(value: unknown): value is CatalogLocator {
@@ -115,7 +175,12 @@ export function loadDefinition(
   if (!isCatalogLocator(candidate.locator)) return undefined
   if (options.disabled.has(candidate.name)) return undefined
   if (!existsSync(candidate.locator.documentPath)) return undefined
-  const document = readDocument(candidate.locator.documentPath)
+  let document: SkillDocument
+  try {
+    document = readDocument(candidate.locator.documentPath)
+  } catch {
+    return undefined
+  }
   if (document.name !== candidate.name) return undefined
   return {
     name: document.name,

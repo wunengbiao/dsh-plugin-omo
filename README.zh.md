@@ -85,6 +85,8 @@ patch 层再重启应用：
 
 未知键、类型错误、非 kebab-case 名称都会让插件加载失败，并给出指出问题的报错。
 
+单个 SKILL.md 写坏不会让插件加载失败：该文档被跳过、路径写进日志，provider 上报不完整目录，其余技能照常可用。
+
 ### 优先级
 
 默认 rank 落在 bundled 档。DSH 的本地 provider 会先扫描 `<project>/.agents/skills`（rank 200）和用户根（400、

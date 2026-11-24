@@ -134,6 +134,30 @@ test("does not ship a skill whose vendored runtime is absent", async () => {
   assert.equal(candidates.some((candidate) => candidate.name === "browser"), false)
 })
 
+test("one malformed skill does not fail the load and the rest keep working", async () => {
+  const root = mkdtempSync(join(tmpdir(), "dsh-plugin-omo-broken-"))
+  try {
+    mkdirSync(join(root, "good"), { recursive: true })
+    writeFileSync(join(root, "good", "SKILL.md"), "---\nname: good\ndescription: Good skill.\n---\n\n# Good\n")
+    mkdirSync(join(root, "broken"), { recursive: true })
+    writeFileSync(join(root, "broken", "SKILL.md"), "---\nname: Broken_Name\ndescription: bad\n---\n\n# broken\n")
+    const { ctx, warnings } = createContext()
+    const instance = apply(ctx, { extraSkillDirs: [root] })
+    const listing = await instance.provider.list({})
+    assert.ok(!Array.isArray(listing), "expected an incomplete observation")
+    assert.equal(listing.complete, false)
+    assert.equal(listing.candidates.some((candidate) => candidate.name === "good"), true)
+    assert.equal(listing.candidates.some((candidate) => candidate.name === "broken"), false)
+    assert.ok(warnings.some((warning) => warning.includes("broken")))
+    const ulwPlan = listing.candidates.find((candidate) => candidate.name === "ulw-plan")
+    assert.ok(ulwPlan)
+    const bundled = await instance.provider.get(ulwPlan, {})
+    assert.ok(bundled && bundled.content.length > 1000)
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
 test("fails loudly on a malformed skill document and on invalid configuration", () => {
   assert.throws(() => parseSkillDocument("---\nname: Bad_Name\ndescription: x\n---\n", "probe"), SkillDocumentError)
   assert.throws(() => normalizeOmoConfig({ unknownKey: true }), /unknown keys/)

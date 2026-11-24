@@ -89,6 +89,9 @@ Configuration is optional. Put it on the `omo` row of `$DSH_HOME/profiles/<profi
 
 Unknown keys, wrong types, and non-kebab names fail the plugin load with a message that names the problem.
 
+A malformed SKILL.md never fails the plugin load: the document is skipped, its path is logged, and the provider
+reports an incomplete catalog so the surviving skills keep working.
+
 ### Precedence
 
 The default rank sits in the bundled tier. DSH's local provider scans `<project>/.agents/skills` (rank 200) and the

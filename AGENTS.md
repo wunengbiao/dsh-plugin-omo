@@ -27,6 +27,9 @@ what `dsh plugin add github:wunengbiao/dsh-plugin-omo` resolves to.
   file; a changed body without a regenerated manifest is a bug.
 - **The installed package must run with zero dependencies and zero build steps.** `files` ships only the entry,
   `lib`, `skills`, the patch, the icon, and the docs. No `prepare` script: a git install must never execute code.
+- **Loading never parses skill documents.** `apply()` only counts documents, so one malformed SKILL.md cannot fail
+  the bundle. Discovery reports it: `list()` returns the surviving candidates with `complete: false`, `get()`
+  reports that skill as unavailable, and the plugin logs the path.
 - **Rank stays at 600.** Project roots (100, 200) and user roots (400, 500) must win duplicate skill names.
 - **Fail loud.** Malformed SKILL.md, unknown config keys, wrong types, and the reserved `runtime` provider name all
   throw with a message naming the offending file or key.
