@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { test } from "node:test"
@@ -155,6 +155,28 @@ test("one malformed skill does not fail the load and the rest keep working", asy
     assert.ok(bundled && bundled.content.length > 1000)
   } finally {
     rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test("follows a symlinked skill directory and skips a dangling link", async () => {
+  const target = mkdtempSync(join(tmpdir(), "dsh-plugin-omo-target-"))
+  const root = mkdtempSync(join(tmpdir(), "dsh-plugin-omo-linkroot-"))
+  try {
+    mkdirSync(join(target, "linked"), { recursive: true })
+    writeFileSync(join(target, "linked", "SKILL.md"), "---\nname: linked\ndescription: Reached by symlink.\n---\n\n# Linked\n")
+    symlinkSync(join(target, "linked"), join(root, "linked"), "dir")
+    symlinkSync(join(root, "does-not-exist"), join(root, "dangling"), "dir")
+    const { ctx } = createContext()
+    const instance = apply(ctx, { extraSkillDirs: [root] })
+    const listing = await instance.provider.list({})
+    const candidates = Array.isArray(listing) ? listing : listing.candidates
+    const linked = candidates.find((candidate) => candidate.name === "linked")
+    assert.ok(linked)
+    const definition = await instance.provider.get(linked, {})
+    assert.equal(definition.content, "# Linked")
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+    rmSync(target, { recursive: true, force: true })
   }
 })
 

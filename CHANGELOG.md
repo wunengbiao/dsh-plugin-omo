@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.3
+
+- Follow symlinked skill entries. A root containing a symlinked bundle (`<root>/<name> -> elsewhere`) or a symlinked
+  flat document was skipped, because `readdirSync` reports a link as neither a directory nor a file. Discovery now
+  stats the link, so shared or symlinked skill directories are picked up; a dangling link is skipped instead of
+  throwing. This matters for users who share skills between projects or symlink a local checkout.
+
 ## 0.1.2
 
 - One malformed SKILL.md no longer takes the whole bundle down. `apply()` used to parse every document while

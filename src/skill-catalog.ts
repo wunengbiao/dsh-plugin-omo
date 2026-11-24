@@ -5,7 +5,7 @@
  * entries (`<name>.md`). Roots are scanned in order and a name found in an
  * earlier root wins, so a project or user override stays authoritative.
  */
-import { existsSync, readFileSync, readdirSync } from "node:fs"
+import { type Dirent, existsSync, readFileSync, readdirSync, statSync } from "node:fs"
 import { dirname, join, resolve } from "node:path"
 import type { HostSkillCandidate, HostSkillDefinition, HostSkillLookupOptions } from "./host.ts"
 import { type SkillDocument, parseSkillDocument } from "./skill-document.ts"
@@ -33,16 +33,28 @@ interface DiscoveredSkill {
   readonly document: SkillDocument
 }
 
+/** Classify one directory entry, following symlinks and skipping broken ones. */
+function classifyEntry(directory: string, entry: Dirent): { directory: boolean; file: boolean } {
+  if (!entry.isSymbolicLink()) return { directory: entry.isDirectory(), file: entry.isFile() }
+  try {
+    const stats = statSync(join(directory, entry.name))
+    return { directory: stats.isDirectory(), file: stats.isFile() }
+  } catch {
+    return { directory: false, file: false }
+  }
+}
+
 function listMarkdownFiles(root: string): string[] {
   const entries = readdirSync(root, { withFileTypes: true })
   const documents: string[] = []
   for (const entry of entries) {
-    if (entry.isDirectory()) {
+    const kind = classifyEntry(root, entry)
+    if (kind.directory) {
       const bundle = join(root, entry.name, "SKILL.md")
       if (existsSync(bundle)) documents.push(bundle)
       continue
     }
-    if (entry.isFile() && entry.name.endsWith(".md")) documents.push(join(root, entry.name))
+    if (kind.file && entry.name.endsWith(".md")) documents.push(join(root, entry.name))
   }
   return documents.sort()
 }
@@ -64,11 +76,12 @@ export function countSkillDocuments(roots: readonly string[]): number {
     const root = resolve(configuredRoot)
     if (!existsSync(root)) continue
     for (const entry of readdirSync(root, { withFileTypes: true })) {
-      if (entry.isDirectory()) {
+      const kind = classifyEntry(root, entry)
+      if (kind.directory) {
         if (existsSync(join(root, entry.name, "SKILL.md"))) count += 1
         continue
       }
-      if (entry.isFile() && entry.name.endsWith(".md")) count += 1
+      if (kind.file && entry.name.endsWith(".md")) count += 1
     }
   }
   return count
