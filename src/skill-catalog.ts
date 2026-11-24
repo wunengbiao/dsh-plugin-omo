@@ -75,7 +75,13 @@ export function countSkillDocuments(roots: readonly string[]): number {
   for (const configuredRoot of roots) {
     const root = resolve(configuredRoot)
     if (!existsSync(root)) continue
-    for (const entry of readdirSync(root, { withFileTypes: true })) {
+    let entries: Dirent[]
+    try {
+      entries = readdirSync(root, { withFileTypes: true })
+    } catch {
+      continue
+    }
+    for (const entry of entries) {
       const kind = classifyEntry(root, entry)
       if (kind.directory) {
         if (existsSync(join(root, entry.name, "SKILL.md"))) count += 1
@@ -112,7 +118,15 @@ export function discoverSkills(options: CatalogOptions): CatalogDiscovery {
     const root = resolve(configuredRoot)
     if (!existsSync(root)) continue
     const seenInRoot = new Set<string>()
-    for (const documentPath of listMarkdownFiles(root)) {
+    let documentPaths: string[]
+    try {
+      documentPaths = listMarkdownFiles(root)
+    } catch (error) {
+      // An unreadable or non-directory root must not hide the other roots' skills.
+      issues.push({ documentPath: root, message: error instanceof Error ? error.message : String(error) })
+      continue
+    }
+    for (const documentPath of documentPaths) {
       let document: SkillDocument
       try {
         document = readDocument(documentPath)

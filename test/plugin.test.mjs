@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
+import { chmodSync, mkdtempSync, mkdirSync, readFileSync, rmSync, symlinkSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { test } from "node:test"
@@ -197,6 +197,24 @@ test("picks up a skill added after mounting through the root watcher", async () 
     assert.deepEqual(names, ["first", "second"])
   } finally {
     rmSync(root, { recursive: true, force: true })
+  }
+})
+
+test("an unreadable root does not hide the bundled skills", { skip: process.platform === "win32" }, async () => {
+  const locked = mkdtempSync(join(tmpdir(), "dsh-plugin-omo-locked-"))
+  try {
+    mkdirSync(join(locked, "secret"), { recursive: true })
+    writeFileSync(join(locked, "secret", "SKILL.md"), "---\nname: secret\ndescription: Locked.\n---\n\n# secret\n")
+    chmodSync(locked, 0o000)
+    const { ctx } = createContext()
+    const instance = apply(ctx, { extraSkillDirs: [locked] })
+    const listing = await instance.provider.list({})
+    const candidates = Array.isArray(listing) ? listing : listing.candidates
+    assert.equal(candidates.length, 18)
+    assert.equal(candidates.some((candidate) => candidate.name === "secret"), false)
+  } finally {
+    chmodSync(locked, 0o755)
+    rmSync(locked, { recursive: true, force: true })
   }
 })
 

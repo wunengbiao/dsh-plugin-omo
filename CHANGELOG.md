@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.5
+
+- An unreadable or non-directory skill root no longer empties the catalog. Reading it threw, which propagated out of
+  `list()` and made the registry drop the whole provider, so one `chmod 000` extra directory hid all 18 bundled
+  skills. The root is now reported as a catalog issue, the surviving roots still serve their skills, and the path is
+  logged.
+
 ## 0.1.4
 
 - Refresh the catalog when a skill is added or removed. The registry caches one completed catalog per provider, so a
