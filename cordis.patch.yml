@@ -1,0 +1,4 @@
+# Bundle patch layer: load this package's plugin entry through the Cordis loader.
+- insert:
+    - id: omo
+      name: dsh-plugin-omo

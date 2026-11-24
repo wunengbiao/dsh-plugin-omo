@@ -1,0 +1,65 @@
+{
+  "name": "dsh-plugin-omo",
+  "version": "0.1.0",
+  "description": "DeepSeek Harness plugin: ships the oh-my-openagent (omo) cross-harness skills as a native DSH SkillProvider | DeepSeek Harness 插件：把 oh-my-openagent 的跨 harness 技能以 DSH 原生 SkillProvider 形式提供",
+  "type": "module",
+  "main": "index.js",
+  "exports": {
+    ".": "./index.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json"
+  },
+  "files": [
+    "index.js",
+    "lib",
+    "skills",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "README.zh.md",
+    "CHANGELOG.md"
+  ],
+  "scripts": {
+    "build": "bun scripts/build.mjs",
+    "check": "node --check index.js && node --check lib/host.js && node --check lib/skill-document.js && node --check lib/skill-catalog.js && node --check lib/provider.js && node --check lib/plugin.js",
+    "test": "node --test test/*.test.mjs"
+  },
+  "engines": {
+    "node": ">=22",
+    "dsh": ">=0.2.2-rc.1"
+  },
+  "keywords": [
+    "dsh",
+    "dsh-plugin",
+    "deepseek-harness",
+    "cordis",
+    "omo",
+    "oh-my-openagent",
+    "skills",
+    "agent"
+  ],
+  "author": "wunengbiao",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wunengbiao/dsh-plugin-omo.git"
+  },
+  "homepage": "https://github.com/wunengbiao/dsh-plugin-omo#readme",
+  "bugs": {
+    "url": "https://github.com/wunengbiao/dsh-plugin-omo/issues"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "compatibility": {
+      "dshReleases": {
+        "0.2.2-rc.1+": "compatible"
+      }
+    }
+  },
+  "icon": "icon.svg"
+}
