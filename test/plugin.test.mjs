@@ -219,6 +219,15 @@ test("an unreadable root does not hide the bundled skills", { skip: process.plat
   }
 })
 
+test("a block scalar may contain an indented fence line", () => {
+  const parsed = parseSkillDocument(
+    "---\nname: fenced\ndescription: |\n  Line one.\n  ---\n  Line three.\n---\n\n# Body\n",
+    "probe",
+  )
+  assert.equal(parsed.description, "Line one.\n---\nLine three.")
+  assert.equal(parsed.body, "# Body")
+})
+
 test("fails loudly on a malformed skill document and on invalid configuration", () => {
   assert.throws(() => parseSkillDocument("---\nname: Bad_Name\ndescription: x\n---\n", "probe"), SkillDocumentError)
   assert.throws(() => normalizeOmoConfig({ unknownKey: true }), /unknown keys/)

@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.1.6
+
+- End the frontmatter only at a column-0 fence. A block scalar containing an indented `---` (a literal rule line
+  inside a description) was treated as the closing fence, so the description was truncated and the rest leaked into
+  the skill body. Trailing spaces on the closing fence are still accepted.
+
 ## 0.1.5
 
 - An unreadable or non-directory skill root no longer empties the catalog. Reading it threw, which propagated out of

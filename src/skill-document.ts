@@ -9,6 +9,14 @@
 /** Kebab-case identifier rule the skill registry enforces. */
 export const SKILL_NAME_PATTERN = /^[a-z0-9]+(?:-[a-z0-9]+)*$/
 
+/**
+ * Closing frontmatter fence: a column-0 `---`, optionally with trailing spaces or tabs.
+ *
+ * An indented `---` belongs to a block scalar value, so matching on `trim()` would cut the
+ * frontmatter short and leak the rest of the description into the body.
+ */
+const CLOSING_FENCE = /^---[ \t]*$/
+
 /** Raised when a SKILL.md cannot become a registry-valid skill. */
 export class SkillDocumentError extends Error {
   readonly skillPath: string
@@ -144,7 +152,7 @@ export function parseSkillDocument(raw: string, skillPath: string): SkillDocumen
   if ((lines[0] ?? "").trim() !== "---") {
     throw new SkillDocumentError(skillPath, "missing YAML frontmatter")
   }
-  const closingIndex = lines.findIndex((line, index) => index > 0 && line.trim() === "---")
+  const closingIndex = lines.findIndex((line, index) => index > 0 && CLOSING_FENCE.test(line))
   if (closingIndex < 0) {
     throw new SkillDocumentError(skillPath, "unterminated YAML frontmatter")
   }
