@@ -80,79 +80,6 @@
       ]
     },
     {
-      "name": "browser",
-      "files": [
-        {
-          "path": "browser/.gitignore",
-          "sha256": "a73c84fddc8c2d27242f2adc38a3da151e7ec312d46a065e2909eea10797e461"
-        },
-        {
-          "path": "browser/.npmignore",
-          "sha256": "7512ed8a00bfdc9051fa9bc5ce263b833ae52ea55d4ba9569db18282bfe250e4"
-        },
-        {
-          "path": "browser/ATTRIBUTION.md",
-          "sha256": "d0ef32bf464a011718b50d60292d9e216d6f15523bf9fd9ad0cda2a1746ceb2d"
-        },
-        {
-          "path": "browser/SKILL.md",
-          "sha256": "d6f2ade2591951c8c6a4a978ffd84006f039968d2805b12eb32ad35a765dc8de"
-        },
-        {
-          "path": "browser/references/commands.md",
-          "sha256": "aed47d38c327cedb97d0f410920be9ed1b3aac56b4612108656bbaefa27aa679"
-        },
-        {
-          "path": "browser/references/install.md",
-          "sha256": "4f18b5b37196dfee2ff6c5837a4f13ae83c74094c5f8011917d995b540809c0f"
-        },
-        {
-          "path": "browser/references/owned-engine/README.md",
-          "sha256": "746ff831edb36659c98167cbc6c7f012f89684c40265b6d3b87d89cb1dd221dd"
-        },
-        {
-          "path": "browser/references/owned-engine/frames-and-humans.md",
-          "sha256": "4071e64e85b10b8233f39b314f0d4b00c181d1a0fac23dfb48817a96c2cfaa2f"
-        },
-        {
-          "path": "browser/references/owned-engine/ladder.md",
-          "sha256": "45c67805ed356818b83260b259ddc44b02a703d3811f3636a0eabf402e30f39c"
-        },
-        {
-          "path": "browser/references/owned-engine/network.md",
-          "sha256": "a8ee0cbec437b67e3a5e23a6a28889ea8a3667cc883024605f102d19d50d60a7"
-        },
-        {
-          "path": "browser/references/recipes/1password.md",
-          "sha256": "a719bb23423183a796c6ce89b365651be05b422540494d96e3fc38410263093e"
-        },
-        {
-          "path": "browser/references/remote.md",
-          "sha256": "5a2fd6f54181e5db523db1cca2918d5333dc85b75e2902e16717cc473f6c1522"
-        },
-        {
-          "path": "browser/scripts/browser-doctor-report.mjs",
-          "sha256": "e261f25898b2d3e5b67667da5d00fc666e48ff8d8817a198f6c227cb5c671af7"
-        },
-        {
-          "path": "browser/scripts/browser-doctor.mjs",
-          "sha256": "9200a88ef6d1ad1901adfba2e84b1a5a914ca0c0786cba7325180ed2a9fe02c6"
-        },
-        {
-          "path": "browser/scripts/browser-engine-guard.mjs",
-          "sha256": "24d65cc310b309109e9334cbca20dd6acfc4dc45c3a8c43b95d7c72a8fc3aa10"
-        },
-        {
-          "path": "browser/scripts/browser-install.mjs",
-          "sha256": "1e65f7bd78b9cd1503af0943904177c9ad9642a529f6820241838b097e5bfeea"
-        },
-        {
-          "path": "browser/scripts/omowright.mjs",
-          "sha256": "4372262f9f2a338e92accd19d9a08b09cc793015cfcd7cfdb9a7a472fd637682"
-        }
-      ]
-    },
-    {
       "name": "coding-agent-sessions",
       "files": [
         {
@@ -488,32 +415,152 @@
           "sha256": "091d198c2bdccabeb533ecdea61c176f6533e1f116170834ae067d343e7fcd8e"
         },
         {
+          "path": "frontend/references/design/airbnb.md",
+          "sha256": "4cd7b1972080ebeb2c360b27271e1d898c153c46c9d7f038ed512bb5130577fc"
+        },
+        {
+          "path": "frontend/references/design/airtable.md",
+          "sha256": "2bf4a6f853c23c8cf04f890654ad3cebec849a98de1655425b65e3ad25b69476"
+        },
+        {
           "path": "frontend/references/design/ambience-skill.md",
           "sha256": "2fce271aa5c5cc6b0467131cdea1104333ba5b595847054b973c956037b66546"
+        },
+        {
+          "path": "frontend/references/design/apple.md",
+          "sha256": "001c06b02855b8443b397bfef583be5dedfd96391dcae94d7e3050e64841ed4d"
         },
         {
           "path": "frontend/references/design/aside.md",
           "sha256": "ff0ef98efa7e1d055914e18a5903d42b84684cfb241ab58b064eeab076226add"
         },
         {
+          "path": "frontend/references/design/binance.md",
+          "sha256": "7e86c5ac3bb21e1a8f210dab37cf6f5fad0252015ce8959afe5ddffca55abde8"
+        },
+        {
+          "path": "frontend/references/design/bmw.md",
+          "sha256": "f04fb9e29769c567674bfbba43bebaa01760f303d5bd544770dd80bdf7e807fb"
+        },
+        {
+          "path": "frontend/references/design/brutalist-skill.md",
+          "sha256": "fffbaac8597f07679e9d87145533567658aedba3b5eca6f16a7075a333048caa"
+        },
+        {
+          "path": "frontend/references/design/bugatti.md",
+          "sha256": "67f88865f620c03d2582af03fa2a1ca87599633deaab240035feb1ab8255cd05"
+        },
+        {
+          "path": "frontend/references/design/cal.md",
+          "sha256": "520e5c64e4dc6e368e4870ae2b0470225d587a41e426399475046e3932c690a1"
+        },
+        {
+          "path": "frontend/references/design/claude.md",
+          "sha256": "79063565b490ace245dbca4d134c5aff849d16b7004c1e8e23cea1ea98fa7eb5"
+        },
+        {
+          "path": "frontend/references/design/clay.md",
+          "sha256": "885f8be9e2d5c61b4cd024c9d5c308a791a0d4b0d464a2015094b67884890375"
+        },
+        {
+          "path": "frontend/references/design/clickhouse.md",
+          "sha256": "71b0f6cf864dd276afe3d8d3c93f8b6c969006fc8fd25b667b39ea07f32df496"
+        },
+        {
           "path": "frontend/references/design/clone-from-url.md",
           "sha256": "213ea26ea6c980f9f71cb4fbae835bd0451b2da7d6fe59929dd361a4e6dc9f9e"
+        },
+        {
+          "path": "frontend/references/design/cohere.md",
+          "sha256": "c0a7270cd888b74a4cebb9621f075f9f2e2bca9712723110e890fe2366032668"
+        },
+        {
+          "path": "frontend/references/design/coinbase.md",
+          "sha256": "52d6851e1cf6701d7b2344d148868e12f46b08ac80a65a31026e08e8ea6af66c"
         },
         {
           "path": "frontend/references/design/component-catalogs.md",
           "sha256": "901c81ac36532545c541215d94f03534dd01ea749f3279423a74af1a4c83017c"
         },
         {
+          "path": "frontend/references/design/composio.md",
+          "sha256": "c844f7873b28076dcce380204f5c79fbf3b63ce48a4f435907a36ad02bf5337d"
+        },
+        {
+          "path": "frontend/references/design/cursor.md",
+          "sha256": "66f4f737a2fbc17cd37489f321bbfa799b202a28bcf0df2b86a70b7773926a69"
+        },
+        {
           "path": "frontend/references/design/design-system-architecture.md",
           "sha256": "77eb395f562b43f7826c8855490733d430c4c92987e9f41b6a166efbc75335ff"
+        },
+        {
+          "path": "frontend/references/design/elevenlabs.md",
+          "sha256": "272e7f135ed7413ed666907c23a4d7ef2f4b7940fd5b796ae1b736927f45e011"
+        },
+        {
+          "path": "frontend/references/design/expo.md",
+          "sha256": "a1135f6a50e65ade8d129422922d7f63df41ed2929c2507e893e2582048c2849"
+        },
+        {
+          "path": "frontend/references/design/ferrari.md",
+          "sha256": "b77c3efadbc1a2f761ca5c66919d186e749067aa2c73c936b41708d35f7f1a3a"
+        },
+        {
+          "path": "frontend/references/design/figma.md",
+          "sha256": "69ec480da3a8befab7b44ffd5cc4deca0c8ae8ac5ee690335413063fa1a38292"
+        },
+        {
+          "path": "frontend/references/design/framer.md",
+          "sha256": "35d8767071c0d155864e1abbceb6c874b6c461986092e0bceb9f8bdf6dfdf0cc"
+        },
+        {
+          "path": "frontend/references/design/gpt-tasteskill.md",
+          "sha256": "2e64c269953f2656c21bf5a0fa6b4568e82fe0c72b36e8f84758e090349966a5"
         },
         {
           "path": "frontend/references/design/grounding.md",
           "sha256": "b80242820fd28e57bf284611e7edb0b4b25023ad7d3abed8d257381e7be9458e"
         },
         {
+          "path": "frontend/references/design/hashicorp.md",
+          "sha256": "7532880ef6c1bd586a5fb6229563b69f26ee841994f5616c698e0316813042c6"
+        },
+        {
+          "path": "frontend/references/design/ibm.md",
+          "sha256": "eab18ea70c2e4da497a2e90a25e6e9919ac18a4136f1dcd35ce838c37c2586da"
+        },
+        {
+          "path": "frontend/references/design/image-to-code-skill.md",
+          "sha256": "4c060a8064a8b13380bc2ef3d6e6a1d0b1e316aa093cd9807d0ce9e4eeb037fa"
+        },
+        {
+          "path": "frontend/references/design/imagegen-brandkit.md",
+          "sha256": "b0c4837e1bd140ca816ae54948754ddd2ac1e2a4d3619363777a80caf00b2ede"
+        },
+        {
+          "path": "frontend/references/design/imagegen-frontend-mobile.md",
+          "sha256": "8a33389979f3074fa0926678e266ad2eb9234624472254469fc1ad916b9caa24"
+        },
+        {
+          "path": "frontend/references/design/imagegen-frontend-web.md",
+          "sha256": "6b5c2256522fdba1e3313eafa3d743b960a7b13ec029d3e6586e04b23327c1f8"
+        },
+        {
           "path": "frontend/references/design/interaction-skill.md",
           "sha256": "9208a979f1f21ed31df1ae60be1cb86cf9ecf45e3dd485cd97fc9a86ca670dc4"
+        },
+        {
+          "path": "frontend/references/design/intercom.md",
+          "sha256": "00015191406ee315f7d9ef97a72f5272d9f47ce6fa7899332584a1990800aa72"
+        },
+        {
+          "path": "frontend/references/design/kraken.md",
+          "sha256": "8b9a1b5eebcce82881debd4ab815e780ba98b091fc9568475ddfb36be94c0c24"
+        },
+        {
+          "path": "frontend/references/design/lamborghini.md",
+          "sha256": "ee84e6d0b5a779f53032fa8fec721c632d936a05006e97101150a882e43d7178"
         },
         {
           "path": "frontend/references/design/layout-skill.md",
@@ -524,16 +571,224 @@
           "sha256": "9f19eeb60596123ac02d6d00b76dea76af43f3a2b1d67fb07d65c9bb50cf4ac1"
         },
         {
+          "path": "frontend/references/design/linear.app.md",
+          "sha256": "4c7264d8bc0e26de761c550e9f0445b0e7d92078c1a288f3fdb604b4f6df8fb7"
+        },
+        {
+          "path": "frontend/references/design/lovable.md",
+          "sha256": "8a568b388dca500e2eeb631eb05c6d10b7f64a6bdbd7401634a86ec4e1fd5191"
+        },
+        {
+          "path": "frontend/references/design/mastercard.md",
+          "sha256": "ba5a4f889cd52286b87cd06ebb9646ed91ea631dc6249491c0d27dde940f05c6"
+        },
+        {
+          "path": "frontend/references/design/meta.md",
+          "sha256": "1d981f34450ed843495c5d1680b7c8e4ff13a48851c17001a376941c6b45a547"
+        },
+        {
+          "path": "frontend/references/design/minimalist-skill.md",
+          "sha256": "36bc7328f085405f43b476938e62460fa573bf7e984e949e072bcf014831a44c"
+        },
+        {
+          "path": "frontend/references/design/minimax.md",
+          "sha256": "2960199d25c4b9a1fd8bc4756d998ee49c6315d7db23ad7ac0e274365f91ac9e"
+        },
+        {
+          "path": "frontend/references/design/mintlify.md",
+          "sha256": "ada2deafc02f37cc83570319e5309e767164a6a52b1b097d85f667bfa0c911df"
+        },
+        {
+          "path": "frontend/references/design/miro.md",
+          "sha256": "51f348feaf10f92873854e49dccb1c03a32bbb573f1de0bc87981d4d540f91d8"
+        },
+        {
+          "path": "frontend/references/design/mistral.ai.md",
+          "sha256": "59424032ca98c9d00103a9dc65e3a0a25de1bf44c7e618cdb094376af72b84c1"
+        },
+        {
+          "path": "frontend/references/design/mongodb.md",
+          "sha256": "8ade6a733fe3d4d264d3ce13dc8720203898c514568f39e9fcd26438c34a2ec7"
+        },
+        {
+          "path": "frontend/references/design/nike.md",
+          "sha256": "44b623b34e5b6cabd50f2fe391578f05dbd2fe91ee517f1e38c2c1e4ed9f647a"
+        },
+        {
+          "path": "frontend/references/design/notion.md",
+          "sha256": "94c550cc035a90aa08b6645e7b3105d2e579453f8415e57b3639319fdb7e5b23"
+        },
+        {
+          "path": "frontend/references/design/nvidia.md",
+          "sha256": "f1000c03abd65cd10835069bffc2e3e6f9a704e53e9e16d7134e12e2aa3d5fb9"
+        },
+        {
+          "path": "frontend/references/design/ollama.md",
+          "sha256": "a40ef634612c07706462e081b1b77ba18915faa60d2dea1a19c2945aa448b3f7"
+        },
+        {
+          "path": "frontend/references/design/opencode.ai.md",
+          "sha256": "beaa5092524e38e89825f4f59818e2b2dfdf86b6344c734c1fba3295d2d7bc90"
+        },
+        {
+          "path": "frontend/references/design/output-skill.md",
+          "sha256": "e5bf48b1ae561511439cf71672209a10a88cee0968cc925909ff861dfa0a96a7"
+        },
+        {
+          "path": "frontend/references/design/pinterest.md",
+          "sha256": "e6cb634aca8404b43b9eaeaf650bb64b0d26b1240bb3c33da643fded1fe1ecaa"
+        },
+        {
+          "path": "frontend/references/design/playstation.md",
+          "sha256": "aa328bc329428dd69daee224a64d8ad793dbdd340d9bb1cb8df2794dbbafabd6"
+        },
+        {
+          "path": "frontend/references/design/posthog.md",
+          "sha256": "a42b20545c777f732d6b9a0e24d877b229e84ce10a0e9e3ef9f058ea2c86fc5b"
+        },
+        {
           "path": "frontend/references/design/print-paged-media.md",
           "sha256": "ca09d9004ccc144d714b58aa86261a6db126ae4c3312c3dd4a18d9fea40cb8a9"
+        },
+        {
+          "path": "frontend/references/design/raycast.md",
+          "sha256": "20e65e05ed2eee597dcdb6c7b056bd70842d786c0888592dda255ef672d8dd60"
         },
         {
           "path": "frontend/references/design/react-dev-tooling-skill.md",
           "sha256": "44092192423873baf0c212a017d4930e61b05a91905964121be37029fe11c433"
         },
         {
+          "path": "frontend/references/design/redesign-skill.md",
+          "sha256": "98ad3e5b051bfb71b2795f7e8a6aa0d32b51ee095606c098a4b2822ac07926c9"
+        },
+        {
+          "path": "frontend/references/design/renault.md",
+          "sha256": "db03bb3402edff5e5e84395856777ea6629c40e12fc737c5ae935de5d613be37"
+        },
+        {
+          "path": "frontend/references/design/replicate.md",
+          "sha256": "c3932771f83333f143774ac5d18cf57e9a4083d1e6af7daec605bac715a62dfd"
+        },
+        {
+          "path": "frontend/references/design/resend.md",
+          "sha256": "c6c22baba6e185d30e8da94dac45ebf5d1ae0f21ec88f5e1b3ceeacc14bfe00e"
+        },
+        {
+          "path": "frontend/references/design/revolut.md",
+          "sha256": "62501c2f1441717ee7e93f7df4f8acd637cdd25bc983db45c5d6c69be10a797a"
+        },
+        {
+          "path": "frontend/references/design/runwayml.md",
+          "sha256": "f873f90495a932a50d899f72600c231c76b3e706cdb17f90188747ad36613afc"
+        },
+        {
+          "path": "frontend/references/design/sanity.md",
+          "sha256": "52354c55c1c62dd16aeffc037fad7494a6de918a59bd65843ebcb9e6357928fa"
+        },
+        {
+          "path": "frontend/references/design/sentry.md",
+          "sha256": "a5140c9bbf0bd45426646f087691abed9f8bd70d94d3e4368745622e5163cdaa"
+        },
+        {
+          "path": "frontend/references/design/shopify.md",
+          "sha256": "ab10135212d6d8a0eaf4003f29cf5072f9390c27fb5e109a7bb8d4e2a28f4931"
+        },
+        {
+          "path": "frontend/references/design/soft-skill.md",
+          "sha256": "e1e32f5e2d420872c6c7332b53d5ff7721946766b78c4822b424c2d512c8fdbc"
+        },
+        {
+          "path": "frontend/references/design/spacex.md",
+          "sha256": "ead7689f96a1c44f43cee4831b1525d52757c6aca820b9cf85569651d46ab0b7"
+        },
+        {
+          "path": "frontend/references/design/spotify.md",
+          "sha256": "d7f3bc8413a01de9ef15cac8807990be3561f1897c37d1db9ccf23d84b5b1386"
+        },
+        {
+          "path": "frontend/references/design/starbucks.md",
+          "sha256": "25b116f858b197796ed4962457d07c9f0484e2d3c8e9a7604928358957bd61a3"
+        },
+        {
+          "path": "frontend/references/design/stitch-design-example.md",
+          "sha256": "0ab6740c4ebb1966dbceddb823a66d4bf027e960efbd73faca56cbf8370ae2ad"
+        },
+        {
+          "path": "frontend/references/design/stitch-skill.md",
+          "sha256": "46bdb08fee2dded38b6ba0a051230a502d6ac6e4044afd47592cb40c256028b5"
+        },
+        {
+          "path": "frontend/references/design/stripe.md",
+          "sha256": "66dea910aa4e4d7a2cbda9ad93496da5d464f40f343e7a14b8b8029d873535ae"
+        },
+        {
           "path": "frontend/references/design/stylegallery.md",
           "sha256": "84edfc513f6a24e819f34c2cb15de2296a06b18d8c919e76a7f3edf30baa3903"
+        },
+        {
+          "path": "frontend/references/design/supabase.md",
+          "sha256": "341a8ad07bedf9134060f4c279007d6f920483e3b846ab6ce1d95a7c7b5b6914"
+        },
+        {
+          "path": "frontend/references/design/superhuman.md",
+          "sha256": "93f9375d392f77255f9a98640b53f181076515378b83326782c6e6e12dc51f8e"
+        },
+        {
+          "path": "frontend/references/design/taste-skill.md",
+          "sha256": "aa194351b246b8b4799099d4ed7b033d29eab6e6e3d58d8d2172978be7b3ec89"
+        },
+        {
+          "path": "frontend/references/design/tesla.md",
+          "sha256": "ee98b4b8acb7a0e5d25921e085661bb855e3dbd04c98a5f2885c458a680594e3"
+        },
+        {
+          "path": "frontend/references/design/theverge.md",
+          "sha256": "094db6e7a6369bef4539f7319b5bca116ed1b8e8784c51f8f36be84e566b46ce"
+        },
+        {
+          "path": "frontend/references/design/together.ai.md",
+          "sha256": "e1b6715a344774cf315eb011bc67252871531b0d8d8c55f650cb5a92aac52b4b"
+        },
+        {
+          "path": "frontend/references/design/uber.md",
+          "sha256": "1defaaf4677a0ffd9bcd799ac58a8558dedd08e0066900741e1992d99f860dbc"
+        },
+        {
+          "path": "frontend/references/design/vercel.md",
+          "sha256": "17d533f0ff2e1b5d9be3e69335ab7fc599d1ddf52bc9ac2f2dd36479676cbd3d"
+        },
+        {
+          "path": "frontend/references/design/vodafone.md",
+          "sha256": "53a9b5279d5405a16952eaa9477f363519710a80a58db7d87fb6570327ccc860"
+        },
+        {
+          "path": "frontend/references/design/voltagent.md",
+          "sha256": "2f58cadf75642185b09493a7bf00e81461acd67bdd543c021b22e254e3b2a32f"
+        },
+        {
+          "path": "frontend/references/design/warp.md",
+          "sha256": "41e2006c2ee0c018673f8eed59de198d8ae08b0a4d3bca2a6bdf90a323e6463c"
+        },
+        {
+          "path": "frontend/references/design/webflow.md",
+          "sha256": "0610a10e26546550ee70e8e1804d1222aaff6b355b68eacf8cab95f395516aba"
+        },
+        {
+          "path": "frontend/references/design/wired.md",
+          "sha256": "2c370c20aec5d1a8ccb42e8788cb68b768f0f26f69e0e7f995f468fd96cac57f"
+        },
+        {
+          "path": "frontend/references/design/wise.md",
+          "sha256": "71f1c384405e4641784aa0917b3eebb1ccb478fe11ea0cd6098b4979d4aaf59f"
+        },
+        {
+          "path": "frontend/references/design/x.ai.md",
+          "sha256": "83107b1981e877d7e772f6bfc383b68d1349a84882e22e0c2cba0409e70d82e6"
+        },
+        {
+          "path": "frontend/references/design/zapier.md",
+          "sha256": "01a80cc76a4c32defdca2efa34ebb34ba5a14ee6553894252a705d8e52228de4"
         },
         {
           "path": "frontend/references/designpowers/EVIDENCE.md",
@@ -572,6 +827,158 @@
           "sha256": "af4becf1099860ab81a5d69b3b89b067586d2e33a0702988ebe5cdbbe48017dc"
         },
         {
+          "path": "frontend/references/designpowers/vendor/LICENSE",
+          "sha256": "1400d572fb60897f7970a763fb73d1aa7804b71bad41bf6e45061de7b7a09ac1"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/accessibility-reviewer.md",
+          "sha256": "6a6e998da2b40a72255a44b531e4086cbc6106634bb8e62ebeb7a935156f0e59"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/content-writer.md",
+          "sha256": "4951ff11c75c05a077c720883ad60375d452c507bc07407beb29176a9fa383a0"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/design-builder.md",
+          "sha256": "2403ecca396ec779377c06ffebb9146293e749b350f6e71f64a4c3274d78e272"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/design-critic.md",
+          "sha256": "3a24ea2e289add3f50b51a603eaee0d3914d14233b9d325fa979fbf8723c0c12"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/design-lead.md",
+          "sha256": "cae566ad39634ecfda58bbe7a6d5227406662cfd61d263a6bae4cf142c5b4435"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/design-scout.md",
+          "sha256": "ee220d8e8fc7eb63ac37379f38c91e1211c49101bfe05bcadab8267cf45d1292"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/design-strategist.md",
+          "sha256": "e1a0467b33f2f51ab9b393d5e45f274b7cc0851a20bc2477a3f59d73334ee8d5"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/heuristic-evaluator.md",
+          "sha256": "6f66c4c3369c3e034899ae9141326fab75cecc1c46920d46d28413f2f536052a"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/inspiration-scout.md",
+          "sha256": "9494bc48b836d74f68b57a111f29b75a050f38fb1ba5db18189119470a9af2a8"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/agents/motion-designer.md",
+          "sha256": "bb622b9e2d6456573032ecbd297fc031129231cdabcafc62a49eb0c38fc017d0"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/accessible-content/reference.md",
+          "sha256": "25c3c261f8dd9576166314e70cd6e4c45129805a2f66f288a9cb3abb4e0c723b"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/adaptive-interfaces/reference.md",
+          "sha256": "4e2ccfcca475309780ff8787c33ee533a3c50eb2b9c828795c0127f1d178a1c6"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/cognitive-accessibility/reference.md",
+          "sha256": "149ef820423a2f635a7bb937529084305dd5b34aacf28db3d26eb226d07e4c2f"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-debate/reference.md",
+          "sha256": "b535ef96af6cd6a665d8e0fb70f7f7aa6d06aa9d6cad8390bb8694d4a59bf4f5"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-debt-tracker/reference.md",
+          "sha256": "995fa32d22f0fb672a1dea7d86051f8ce1f68cfd02f2a05a602e0d3fa497a494"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-handoff/reference.md",
+          "sha256": "48e357687f933f5fa30c186d6a024f68d60fa053dfe6e380085f1800d34f3233"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-md/reference.md",
+          "sha256": "07c94b9426ec1b9f5c35e31b06e46b885d5b67abd9c3c54591b860d8c66c79a8"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-retrospective/reference.md",
+          "sha256": "357f192c0b4d45da1e1a53ad8ba4a8ecc4112c0077abb995093de7aa461ef8be"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-review/reference.md",
+          "sha256": "b099e87e80df676e8e971f70b0f85c9a4037cbbbd268991f4922650d2cdd1030"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/design-system-alignment/reference.md",
+          "sha256": "fa12f778efb4644d20be837f352872107c2286fc15cb5a1889ab9d3291f5e87c"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/designpowers-critique/reference.md",
+          "sha256": "61a505f993a5abfd91eb53c76ef704cab9ed958d12dc3ed15926dc0bc0f11b30"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/heuristic-evaluation/reference.md",
+          "sha256": "eae74cdd27f258687e137fe22d39c988a4b8bd83b4f48f5becbeaadea1cdf225"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/inclusive-personas/reference.md",
+          "sha256": "3ac1c22795c67ee7ecc8a2dbe2a25d4076d4585e655c99bf030cb718f8b44877"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/inspiration-scouting/reference.md",
+          "sha256": "49f2bc33294c72b642cccb2b3cf5d96a9d4fcf2fd56d1643b56b3f34b7d0078c"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/interaction-design/reference.md",
+          "sha256": "8fa3f1f1dec364f51c36bfdb79c18b97c81e8f1fedf03128057de331497981c6"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/motion-choreography/reference.md",
+          "sha256": "f8b79372efa0cf0f35b841e175270f1608e0d479b4512a732cd00fa8252e65cd"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/research-planning/reference.md",
+          "sha256": "37e907ae662308daf241aa74c6e9ad957457a0b2ba6bc636f9a9a2732b0787c2"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/responsive-patterns/reference.md",
+          "sha256": "03771c1706b5df3d6e305fb877892bbb9813e3fa96f7a93c7f05c8df712f6afc"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/synthetic-user-testing/reference.md",
+          "sha256": "10fc3343cdccbcf55cb7cdbd13fae62128986e565e505cb98345312a70712981"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/taste-feedback/reference.md",
+          "sha256": "48d7eae20b3f1855a95970babffe0eb7af8798d78794be6c42261b05ecb91c9e"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/taste-report/reference.md",
+          "sha256": "312f62c923e2c100c9516b6577fcc90d535167decbb754c9c46087be48ebeda1"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/token-architecture/reference.md",
+          "sha256": "40621d1757aa0026e42e46afa92d5fffa8e427cf8ddf8a2670eee33ff2fae0a0"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/ui-composition/reference.md",
+          "sha256": "67fcef4c8115514210b3a013a08f714f05586270641fe66d8c9685051b9498a5"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/usability-testing/reference.md",
+          "sha256": "f2ca4afb579371b093350bdf456159d4d28c85cd92ff583ebef71a8e19780f2d"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/verification-before-shipping/reference.md",
+          "sha256": "6277cc7fc59a4156bf5894079128fcabdaf679c47d721378cae450e29a1c4996"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/voice-and-tone/reference.md",
+          "sha256": "77daad2fc817adf8f58ed7c51b5be591361096fe532b52f83fe3f62181166d5b"
+        },
+        {
+          "path": "frontend/references/designpowers/vendor/skills/writing-design-plans/reference.md",
+          "sha256": "98964a9308129c79f95ba47f377765388817902e27be4420c716b06e03f46197"
+        },
+        {
           "path": "frontend/references/perfection/README.md",
           "sha256": "64f85ce0f0e92602e1c996d976c6e0dec35f3d0b8916cb8fa4fc6debb4fb5ff3"
         },
@@ -590,6 +997,118 @@
         {
           "path": "frontend/references/perfection/state-and-flow.md",
           "sha256": "6ae6185ead4d3540c977ba343daae34a2a602645eaad689b45a0fc152f5c6266"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/README.md",
+          "sha256": "9bd26c52dfd10dfd613dd3cc85df217dc25a172e380bde41fdfa6fedda288b2a"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/charts.csv",
+          "sha256": "ebb565308115f955791b0431797a89d9b3587c25d5babb9428d10712c4924817"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/colors.csv",
+          "sha256": "69ee8c1147b269599d20ca418bdd6f32563a9aa2d962fb9a9b8dec66bf7b1ba4"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/icons.csv",
+          "sha256": "f376c29fb4df37b4bdb366a5aa70cb211ba3dd8b435390aaa03152a64b07d2e8"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/landing.csv",
+          "sha256": "080cedbcd61ff8ec9520f33929baa76bee9589e783f83b2f8d824a466b6a46d7"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/products.csv",
+          "sha256": "9fd9e776ba847cf44c1ea78f95fe5e33b2c56bb7e186e3cfff9c49bc7fcb691b"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/react-performance.csv",
+          "sha256": "904c8afcda229629545912dde0e8ac37503757131f0169f80b016f1f58c4fd3f"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/astro.csv",
+          "sha256": "ad18dae3ab6d148d37d144592df80dc1825b6c9e86d9d2d68fdda77434206a37"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/flutter.csv",
+          "sha256": "fe36d404c799781e8ba6e9a8179b45799ed5126a545528550cd2eb0f2346e8c5"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/html-tailwind.csv",
+          "sha256": "7aef38e75c53559470afcfa91580a9917ca8b7dbf8b92110389e23e93703ac52"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/jetpack-compose.csv",
+          "sha256": "6c8fd4b0391c342c12b0af15610cd5becbeccaef0bbe8dcfc01d928c3195d93e"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/nextjs.csv",
+          "sha256": "e828ccc04843742f52f545a068e8a9ab0d2b97c0e771f7e93bf0cef74da05554"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/nuxt-ui.csv",
+          "sha256": "05d6e74501b2b6a636faed32450622759f49a5bcafad971f5f4e7eba0eb7be71"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/nuxtjs.csv",
+          "sha256": "f7a3f2d9542856d00199f85c6c023b7c284cc698e2e6e12d61afce2edacb24d6"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/react-native.csv",
+          "sha256": "a08ca77fcf6b6d9531982dce465366296013bfcf12d2938ac72ad57cf0c4f085"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/react.csv",
+          "sha256": "e5624ab41d33427d88e41d07581ce4eca59b37b36ab72a6ad43a9c8e2d0a1c72"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/shadcn.csv",
+          "sha256": "395c2e415ef6f48a474acccdc8eb2c7258a6ed751a5037ba171a2d8823e02ded"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/svelte.csv",
+          "sha256": "71af52d64f266c88070b91dbbaa900c2f8074b6baae9f35eaea6ba9cec6fd803"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/swiftui.csv",
+          "sha256": "c9c2d2510f8e66281a2514e8dd0125a6b653b9ef53a71281b5e7dfe003d5b569"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/stacks/vue.csv",
+          "sha256": "c2724915d3c11cd67263f25896cff721f787a0fdd8326002d31e9f5806dfd8f8"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/styles.csv",
+          "sha256": "9b5089dcde8999333b36878252a255cc3bacbb2fe7b836c76cc7f7aa2abb643d"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/typography.csv",
+          "sha256": "dbea262a54e3bfa2e6c3b15989a365d5ef4c43349316aff46635e82ca825adce"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/ui-reasoning.csv",
+          "sha256": "41976082ecae1100da937c949215dc6694393e03f3c2a7444dd92a9edb43cb11"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/ux-guidelines.csv",
+          "sha256": "1870ee048f2a2bdd60709f8f7adf7f3b6dcad560bc005c8b2915a8ac8639820d"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/data/web-interface.csv",
+          "sha256": "2a17ef810dab715ce1f339861817a8fbe3ccc38142b70517301e874803e838ac"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/scripts/core.py",
+          "sha256": "772b4d567c7a948c5d4a10343473b4123fec04238d250c9ffce31d0733f752c0"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/scripts/design_system.py",
+          "sha256": "93e9af66d94ae6bbce8771aede53fcd0d5720e587de1a83dccad9849978e3fa3"
+        },
+        {
+          "path": "frontend/references/ui-ux-db/scripts/search.py",
+          "sha256": "8369a71c6ebd222a77fc12654e65053bfec6711f81b5e78904c8b70bab125f6b"
         },
         {
           "path": "frontend/scripts/detect/cli.ts",
@@ -3636,6 +4155,12 @@
           "sha256": "9aedf8d0799c5f7b3eadc9f3766bc70de1e30006e63547c9da49819c3b6743d3"
         }
       ]
+    }
+  ],
+  "skipped": [
+    {
+      "name": "browser",
+      "reason": "vendored runtime is not staged (runtime/omowright is missing); build it in the omo checkout first"
     }
   ]
 }

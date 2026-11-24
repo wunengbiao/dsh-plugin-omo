@@ -5,7 +5,7 @@
 
 ## WHAT THIS REPOSITORY IS
 
-The installable distribution of the DSH adapter. It carries the built JavaScript the harness loads, the 19 staged
+The installable distribution of the DSH adapter. It carries the built JavaScript the harness loads, the 18 staged
 skills, and the bundle patch that inserts the `omo` row. Authoring happens in the omo monorepo; this repository is
 what `dsh plugin add github:wunengbiao/dsh-plugin-omo` resolves to.
 
@@ -41,5 +41,5 @@ bun run build && git diff --exit-code index.js lib/   # the committed JS matches
 
 Real-surface check: `dsh plugin --profile web add github:wunengbiao/dsh-plugin-omo#<tag>` in an isolated
 `DSH_HOME`, confirm the `dsh-plugin-omo` layer in `dsh --profile web --dump-config`, then mount the installed
-`index.js` against the harness's own `@deepseek-ai/dsh-skill` `SkillRegistry` and assert `snapshot()` reports 19
+`index.js` against the harness's own `@deepseek-ai/dsh-skill` `SkillRegistry` and assert `snapshot()` reports 18
 skills with `provider: "omo"`.

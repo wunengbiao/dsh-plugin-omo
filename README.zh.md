@@ -6,24 +6,39 @@
 插件向 `ctx.skills` 注册一个名为 `omo` 的 provider。注册之后，随包发布的技能与其它 DSH 技能没有区别：出现在会话
 技能目录里、模型可以用 `skill` 工具加载、相对资源通过 `resourceBase` 解析。
 
+## 这个版本提供什么
+
+18 个技能，构建时从 `packages/shared-skills/skills` 复制：
+
+`ast-grep`、`coding-agent-sessions`、`data-scientist`、`debugging`、`eval-integrity`、`frontend`、
+`git-master`、`init-deep`、`lsp-setup`、`programming`、`refactor`、`remove-ai-slops`、`review-work`、
+`ultimate-browsing`、`ulw-execute`、`ulw-plan`、`ulw-research`、`visual-qa`。
+
+不发 `browser`：它的 omowright 库放在 `runtime/omowright`，那在源码树里是 gitignore 的构建产物，没跑过对应
+stage 步骤时脚本会直接抛错。staging 脚本会跳过这类技能，并把原因写进 `skills/manifest.json`。
+
+这个版本不做什么：不注册工具、不注册 agent preset、不挂 hook、不带 team mode。DSH 自带的工具面（grep、glob、
+read、edit、write、bash、web、jobs、subagent、会话检索）已经覆盖了 omo 在别的 harness 里重写的那部分，重复实现只会
+增加风险而不增加能力。
+
 ## 安装
+
+发布产物在 [wunengbiao/dsh-plugin-omo](https://github.com/wunengbiao/dsh-plugin-omo)：
 
 ```sh
 dsh plugin --profile web add github:wunengbiao/dsh-plugin-omo#v0.1.0
 ```
 
-锁 tag 很重要：这样后续的 push 不会悄悄改掉你机器上运行的代码。包里带的是已构建好的 JavaScript 和技能目录，安装时
-不跑构建脚本，也不需要 pnpm 的 build 许可。
-
-其它形式：
+本包是那个分发仓库的源码真身，在这里构建得到同样的产物；从本地 checkout 安装也可以：
 
 ```sh
-# 不锁版本，跟随 main
-dsh plugin --profile web add github:wunengbiao/dsh-plugin-omo
+# 先构建，再装进命令行 profile（web / tui / headless）
+cd packages/omo-dsh && bun run build
+dsh plugin --profile web add "$(pwd)"
 
-# 从本地 checkout
-git clone https://github.com/wunengbiao/dsh-plugin-omo.git
-dsh plugin --profile web add ./dsh-plugin-omo
+# 或者用 tarball
+cd packages/omo-dsh && bun run build && pnpm pack
+dsh plugin --profile web add ./dsh-plugin-omo-0.1.0.tgz
 ```
 
 包内声明了 `dsh.bundle.patch`，所以 `dsh plugin add` 会把它追加进 `dsh.profile.bundles`，加载器随后把它挂成
@@ -44,22 +59,10 @@ patch 层再重启应用：
 # ~/.dsh/profiles/desktop/cordis.patch.yml
 - insert:
     - id: omo
-      name: /absolute/path/to/dsh-plugin-omo/index.js
+      name: /absolute/path/to/packages/omo-dsh/lib/index.js
 ```
 
 这是本地路径挂载。正式安装应走应用的插件管理器，让包被记进 profile manifest。
-
-## 这个版本提供什么
-
-19 个技能，来自 oh-my-openagent 的 `packages/shared-skills/skills`：
-
-`ast-grep`、`browser`、`coding-agent-sessions`、`data-scientist`、`debugging`、`eval-integrity`、`frontend`、
-`git-master`、`init-deep`、`lsp-setup`、`programming`、`refactor`、`remove-ai-slops`、`review-work`、
-`ultimate-browsing`、`ulw-execute`、`ulw-plan`、`ulw-research`、`visual-qa`。
-
-这个版本不做什么：不注册工具、不注册 agent preset、不挂 hook、不带 team mode。DSH 自带的工具面（grep、glob、
-read、edit、write、bash、web、jobs、subagent、会话检索）已经覆盖了 omo 在别的 harness 里重写的那部分，重复实现只会
-增加风险而不增加能力。
 
 ## 配置
 
@@ -69,7 +72,7 @@ read、edit、write、bash、web、jobs、subagent、会话检索）已经覆盖
 - id: omo
   name: dsh-plugin-omo
   config:
-    disabled: [browser, ultimate-browsing]
+    disabled: [ultimate-browsing, visual-qa]
 ```
 
 | 键 | 类型 | 默认值 | 含义 |
@@ -88,17 +91,19 @@ read、edit、write、bash、web、jobs、subagent、会话检索）已经覆盖
 500），因此项目内或用户自己的同名技能会覆盖本插件随包发布的那份。同一层内两个插件争用同名技能时，先比 rank，
 再比注册顺序。
 
+## 技能为什么留在拥有它们的仓库里
+
+`skills/` 是 `script/build-dsh-plugin.ts` 从 `packages/shared-skills/skills` 生成的，manifest 里记录每个文件的
+sha256。`bun run build:check` 会重新 stage 并比对，一旦副本漂移就失败，所以这个插件不可能悄悄发布一份过期的技能副本。
+
 ## 开发
 
 ```sh
-npm run check   # node --check 检查已提交的运行时模块
-npm test        # node --test，对构建产物做端到端验证
-bun run build   # 从 src/ 重新生成 index.js 与 lib/（仅维护者）
+cd packages/omo-dsh
+bun run build        # 先 stage 技能，再把 src/ 打成 lib/index.js
+bun test src         # 单元测试
+bun run build:check  # 技能副本漂移检查
 ```
-
-`index.js` 与 `lib/*.js` 是提交进仓库的，所以安装端不需要任何工具链。`src/` 是生成它们的 TypeScript 源码；
-源码真身在 oh-my-openagent 的 `packages/omo-dsh`，`skills/` 也从那里的 `packages/shared-skills/skills` 同步。
-两者一起重新生成，不要手改。
 
 ## 许可证
 

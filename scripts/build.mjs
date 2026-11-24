@@ -17,12 +17,12 @@ const srcDir = join(root, "src")
 const libDir = join(root, "lib")
 const entries = readdirSync(srcDir)
   .filter((name) => name.endsWith(".ts"))
-  .map((name) => join(srcDir, name))
+  .map((name) => join("src", name))
 
 rmSync(libDir, { recursive: true, force: true })
 const build = spawnSync(
   "bun",
-  ["build", "--no-bundle", "--target", "node", "--format", "esm", "--outdir", libDir, ...entries],
+  ["build", "--no-bundle", "--root", "src", "--target", "node", "--format", "esm", "--outdir", libDir, ...entries],
   { cwd: root, encoding: "utf8" },
 )
 if (build.status !== 0) {

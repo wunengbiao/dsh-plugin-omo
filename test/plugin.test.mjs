@@ -1,5 +1,5 @@
 import assert from "node:assert/strict"
-import { mkdtempSync, mkdirSync, rmSync, writeFileSync } from "node:fs"
+import { mkdtempSync, mkdirSync, readFileSync, rmSync, writeFileSync } from "node:fs"
 import { tmpdir } from "node:os"
 import { join } from "node:path"
 import { test } from "node:test"
@@ -46,12 +46,11 @@ test("lists the bundled omo skills with the bundled rank", async () => {
   const { ctx } = createContext()
   const instance = apply(ctx)
   const candidates = await instance.provider.list({})
-  assert.equal(candidates.length, 19)
+  assert.equal(candidates.length, 18)
   assert.deepEqual(
     candidates.map((candidate) => candidate.name).sort(),
     [
       "ast-grep",
-      "browser",
       "coding-agent-sessions",
       "data-scientist",
       "debugging",
@@ -95,11 +94,11 @@ test("loads a skill body and points resourceBase at the skill directory", async 
 
 test("hides disabled skills from the catalog and from get", async () => {
   const { ctx } = createContext()
-  const instance = apply(ctx, { disabled: ["browser", "ultimate-browsing"] })
+  const instance = apply(ctx, { disabled: ["ultimate-browsing", "visual-qa"] })
   const candidates = await instance.provider.list({})
-  assert.equal(candidates.length, 17)
-  assert.equal(candidates.some((candidate) => candidate.name === "browser"), false)
-  assert.equal(await instance.provider.get({ name: "browser", locator: {} }, {}), undefined)
+  assert.equal(candidates.length, 16)
+  assert.equal(candidates.some((candidate) => candidate.name === "ultimate-browsing"), false)
+  assert.equal(await instance.provider.get({ name: "ultimate-browsing", locator: {} }, {}), undefined)
 })
 
 test("reads a custom skill root and its invocation policy", async () => {
@@ -119,6 +118,20 @@ test("reads a custom skill root and its invocation policy", async () => {
   } finally {
     rmSync(root, { recursive: true, force: true })
   }
+})
+
+test("does not ship a skill whose vendored runtime is absent", async () => {
+  const manifest = JSON.parse(readFileSync(new URL("../skills/manifest.json", import.meta.url), "utf8"))
+  assert.equal(manifest.skills.length, 18)
+  assert.deepEqual(
+    manifest.skipped.map((skip) => skip.name),
+    ["browser"],
+  )
+  assert.match(manifest.skipped[0].reason, /runtime/)
+  const { ctx } = createContext()
+  const instance = apply(ctx)
+  const candidates = await instance.provider.list({})
+  assert.equal(candidates.some((candidate) => candidate.name === "browser"), false)
 })
 
 test("fails loudly on a malformed skill document and on invalid configuration", () => {

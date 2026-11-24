@@ -7,24 +7,41 @@ The plugin registers one provider named `omo` in `ctx.skills`. Every bundled ski
 DSH skill: it appears in the session catalog, the model can load it with the `skill` tool, and it resolves its
 reference files through `resourceBase`.
 
+## What ships
+
+18 skills copied from `packages/shared-skills/skills` at build time:
+
+`ast-grep`, `coding-agent-sessions`, `data-scientist`, `debugging`, `eval-integrity`, `frontend`,
+`git-master`, `init-deep`, `lsp-setup`, `programming`, `refactor`, `remove-ai-slops`, `review-work`,
+`ultimate-browsing`, `ulw-execute`, `ulw-plan`, `ulw-research`, `visual-qa`.
+
+The `browser` skill is not shipped: it loads the omowright library from `runtime/omowright`, gitignored build output
+in the source tree, so without that staging step its scripts throw. The staging script skips any skill in that state and
+records the reason in `skills/manifest.json`.
+
+What it does not do (yet): no tools, no agent presets, no hooks, no team mode. DSH already ships the tool surface
+(grep, glob, read, edit, write, bash, web, jobs, subagents, session query) that the omo adapters for other harnesses
+reimplement, so duplicating it would add risk without adding capability.
+
 ## Install
+
+The published distribution lives at [wunengbiao/dsh-plugin-omo](https://github.com/wunengbiao/dsh-plugin-omo):
 
 ```sh
 dsh plugin --profile web add github:wunengbiao/dsh-plugin-omo#v0.1.0
 ```
 
-The tag pin matters: it keeps a later push from silently changing what runs on your machine. The package ships its
-built JavaScript and its skills, so the install runs no build script and needs no pnpm build allowance.
-
-Other forms:
+This package is the source of truth for that distribution. Building it here gives the same artifacts; a checkout
+install works too:
 
 ```sh
-# unpinned, tracks main
-dsh plugin --profile web add github:wunengbiao/dsh-plugin-omo
+# build, then install into a CLI profile (web, tui, headless)
+cd packages/omo-dsh && bun run build
+dsh plugin --profile web add "$(pwd)"
 
-# from a checkout
-git clone https://github.com/wunengbiao/dsh-plugin-omo.git
-dsh plugin --profile web add ./dsh-plugin-omo
+# or from a tarball
+cd packages/omo-dsh && bun run build && pnpm pack
+dsh plugin --profile web add ./dsh-plugin-omo-0.1.0.tgz
 ```
 
 The bundle declares `dsh.bundle.patch`, so `dsh plugin add` appends it to `dsh.profile.bundles` and the loader
@@ -34,34 +51,22 @@ mounts it as the `omo` row. Verify without booting:
 dsh --profile web --dump-config | grep dsh-plugin-omo
 ```
 
-Restart the app, or boot the profile again, so the provider is registered in the running session.
+Restart the app (or boot the profile again) so the provider is registered in the running session.
 
 ### Desktop app
 
 The desktop profile belongs to the Electron application, and `dsh plugin --profile desktop` refuses to compose it.
-Mount the installed entry through the desktop profile's own patch layer instead, then restart the app:
+Mount the built entry through the desktop profile's own patch layer instead, then restart the app:
 
 ```yaml
 # ~/.dsh/profiles/desktop/cordis.patch.yml
 - insert:
     - id: omo
-      name: /absolute/path/to/dsh-plugin-omo/index.js
+      name: /absolute/path/to/packages/omo-dsh/lib/index.js
 ```
 
-That row is a local-path mount. A packaged install should go through the app's plugin manager so the package is
-tracked in the profile manifest.
-
-## What ships
-
-19 skills copied from `packages/shared-skills/skills` of oh-my-openagent:
-
-`ast-grep`, `browser`, `coding-agent-sessions`, `data-scientist`, `debugging`, `eval-integrity`, `frontend`,
-`git-master`, `init-deep`, `lsp-setup`, `programming`, `refactor`, `remove-ai-slops`, `review-work`,
-`ultimate-browsing`, `ulw-execute`, `ulw-plan`, `ulw-research`, `visual-qa`.
-
-What it does not do (yet): no tools, no agent presets, no hooks, no team mode. DSH already ships the tool surface
-(grep, glob, read, edit, write, bash, web, jobs, subagents, session query) that the omo adapters for other harnesses
-reimplement, so duplicating it would add risk without adding capability.
+That row is a local-path mount for development. A packaged install should go through the app's plugin manager so the
+package is tracked in the profile manifest.
 
 ## Configure
 
@@ -71,7 +76,7 @@ Configuration is optional. Put it on the `omo` row of `$DSH_HOME/profiles/<profi
 - id: omo
   name: dsh-plugin-omo
   config:
-    disabled: [browser, ultimate-browsing]
+    disabled: [ultimate-browsing, visual-qa]
 ```
 
 | Key | Type | Default | Meaning |
@@ -90,29 +95,33 @@ The default rank sits in the bundled tier. DSH's local provider scans `<project>
 user roots (rank 400 and 500) ahead of it, so a project or user copy of a skill wins over the copy this plugin ships.
 Two plugins claiming the same skill name in the same tier resolve by rank, then registration order.
 
+## Why the skills live in the repository that owns them
+
+The staged `skills/` directory is generated by `script/build-dsh-plugin.ts` from
+`packages/shared-skills/skills`, and the manifest records a sha256 per file. `bun run build:check` re-stages into
+the package and fails when the copy drifted, so the plugin cannot silently ship a stale fork of a skill.
+
 ## Development
 
 ```sh
-npm run check   # node --check over the committed runtime modules
-npm test        # node --test, exercises the built entry end to end
-bun run build   # regenerate index.js and lib/ from src/ (maintainers only)
+cd packages/omo-dsh
+bun run build        # stage skills, then bundle src/ into lib/index.js
+bun test src         # unit tests
+bun run build:check  # drift check for the staged skills
 ```
-
-`index.js` and `lib/*.js` are committed so installs need no toolchain. `src/` holds the TypeScript those files are
-generated from; the source of truth is `packages/omo-dsh` in oh-my-openagent, and `skills/` is staged from
-`packages/shared-skills/skills` there. Regenerate both together, never by hand.
 
 ## Layout
 
 ```
-dsh-plugin-omo/
-  index.js               generated entry (exports name, inject, apply)
-  lib/                   generated runtime modules
-  src/                   TypeScript source those modules come from
-  skills/                the 19 bundled SKILL.md trees plus a sha256 manifest
-  cordis.patch.yml       bundle layer that inserts the omo row
-  scripts/build.mjs      transpiles src/ into index.js and lib/
-  test/plugin.test.mjs   node --test suite over the built entry
+packages/omo-dsh/
+  cordis.patch.yml    bundle layer that inserts the omo row
+  src/host.ts         the DSH host API this plugin depends on
+  src/skill-document.ts  SKILL.md frontmatter parser
+  src/skill-catalog.ts   root scanning, ranking, body loading
+  src/provider.ts        the SkillProvider the registry calls
+  src/plugin.ts          cordis entry: config validation + registration
+  skills/                generated by script/build-dsh-plugin.ts
+  lib/                   generated by bun build
 ```
 
 ## License
