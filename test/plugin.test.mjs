@@ -180,6 +180,26 @@ test("follows a symlinked skill directory and skips a dangling link", async () =
   }
 })
 
+test("picks up a skill added after mounting through the root watcher", async () => {
+  const root = mkdtempSync(join(tmpdir(), "dsh-plugin-omo-refresh-"))
+  try {
+    mkdirSync(join(root, "first"), { recursive: true })
+    writeFileSync(join(root, "first", "SKILL.md"), "---\nname: first\ndescription: First.\n---\n\n# First\n")
+    const { ctx } = createContext()
+    const instance = apply(ctx, { skillDir: root })
+    const before = await instance.provider.list({})
+    assert.equal((Array.isArray(before) ? before : before.candidates).length, 1)
+    mkdirSync(join(root, "second"), { recursive: true })
+    writeFileSync(join(root, "second", "SKILL.md"), "---\nname: second\ndescription: Second.\n---\n\n# Second\n")
+    await new Promise((resolve) => setTimeout(resolve, 350))
+    const after = await instance.provider.list({})
+    const names = (Array.isArray(after) ? after : after.candidates).map((candidate) => candidate.name)
+    assert.deepEqual(names, ["first", "second"])
+  } finally {
+    rmSync(root, { recursive: true, force: true })
+  }
+})
+
 test("fails loudly on a malformed skill document and on invalid configuration", () => {
   assert.throws(() => parseSkillDocument("---\nname: Bad_Name\ndescription: x\n---\n", "probe"), SkillDocumentError)
   assert.throws(() => normalizeOmoConfig({ unknownKey: true }), /unknown keys/)

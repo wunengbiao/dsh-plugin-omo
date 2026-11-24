@@ -92,6 +92,9 @@ Unknown keys, wrong types, and non-kebab names fail the plugin load with a messa
 A malformed SKILL.md never fails the plugin load: the document is skipped, its path is logged, and the provider
 reports an incomplete catalog so the surviving skills keep working.
 
+Skill bodies are read on every load, so editing one is visible immediately. Adding or removing a skill directory
+invalidates the catalog through a root watcher, so it appears on the next lookup instead of after a restart.
+
 ### Precedence
 
 The default rank sits in the bundled tier. DSH's local provider scans `<project>/.agents/skills` (rank 200) and the

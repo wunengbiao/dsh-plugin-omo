@@ -8,6 +8,7 @@ import { fileURLToPath } from "node:url"
 import type { HostContext, HostSkillProvider } from "./host.ts"
 import { createOmoProvider } from "./provider.ts"
 import { BUNDLED_SKILL_RANK, countSkillDocuments } from "./skill-catalog.ts"
+import { createRootWatcher } from "./skill-watcher.ts"
 import { SKILL_NAME_PATTERN } from "./skill-document.ts"
 
 export const name = "omo"
@@ -116,7 +117,11 @@ export function apply(ctx: HostContext, config?: unknown): OmoPluginInstance {
     },
     ctx.logger,
   )
-  const dispose = ctx.skills.registerProvider(() => provider)
+  const watcher = createRootWatcher({ roots: normalized.roots, logger: ctx.logger })
+  const dispose = ctx.skills.registerProvider((control) => {
+    watcher.start(control.invalidate)
+    return provider
+  })
   const missingRoots = normalized.roots.filter((rootPath) => !existsSync(rootPath))
   if (missingRoots.length > 0) {
     ctx.logger?.warn("[dsh-plugin-omo] skill roots missing: " + missingRoots.join(", "))
@@ -132,5 +137,11 @@ export function apply(ctx: HostContext, config?: unknown): OmoPluginInstance {
   ctx.logger?.info(
     "[dsh-plugin-omo] registered provider " + normalized.providerName + " over " + documentCount + " skill documents",
   )
-  return { provider, dispose }
+  return {
+    provider,
+    dispose: () => {
+      watcher.stop()
+      dispose()
+    },
+  }
 }

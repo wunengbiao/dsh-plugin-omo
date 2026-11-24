@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.1.4
+
+- Refresh the catalog when a skill is added or removed. The registry caches one completed catalog per provider, so a
+  skill created after startup stayed invisible until the app restarted: only skill bodies were live, because `get()`
+  rereads them. The provider now watches its roots and calls the registration's `invalidate()` on any directory
+  change, so a new or removed skill appears on the next lookup. Verified against the harness registry: a skill
+  dropped into the root after mounting shows up in the next `snapshot()`.
+
 ## 0.1.3
 
 - Follow symlinked skill entries. A root containing a symlinked bundle (`<root>/<name> -> elsewhere`) or a symlinked
