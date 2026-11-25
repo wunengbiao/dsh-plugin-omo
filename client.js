@@ -27,6 +27,27 @@ window.__ModuleLoader__.load({
       atlas: 'Atlas',
     }
     const ROOT_ATTR = 'data-omo-mode-root'
+    /** Captured in apply(); the client entry is a singleton per page. */
+    let hostContext = undefined
+
+    /**
+     * Open the harness directory picker: the desktop bridge when present, otherwise the
+     * workspace picker the sidebar uses. Returns undefined when the user cancels.
+     */
+    async function pickDirectory() {
+      const desktop = globalThis.__DSH_DIRECTORY_PICKER__
+      if (desktop !== undefined && typeof desktop.pick === 'function') {
+        const result = await desktop.pick()
+        return typeof result === 'string' && result !== '' ? result : undefined
+      }
+      const workspace =
+        hostContext?.uiWorkspace ?? (typeof hostContext?.get === 'function' ? hostContext.get('uiWorkspace') : undefined)
+      if (workspace !== undefined && typeof workspace.pickDirectory === 'function') {
+        const result = await workspace.pickDirectory()
+        return typeof result === 'string' && result !== '' ? result : undefined
+      }
+      throw new Error('没有可用的目录选择器，请直接粘贴路径再点「添加目录」')
+    }
     const STYLE_ID = 'dsh-plugin-omo/mode.module.css'
     const CSS = [
       '[' + ROOT_ATTR + ']{order:1;display:inline-flex;align-items:center}',
@@ -388,9 +409,26 @@ window.__ModuleLoader__.load({
       }
       const addDir = () => {
         const value = dirInput.trim()
-        if (value === '') return
+        if (value === '') {
+          setError(zh ? '先选择一个目录，或直接粘贴路径' : 'Pick a directory first, or paste a path')
+          return
+        }
         setDirInput('')
         void save({ extraSkillDirs: [...new Set([...settings.extraSkillDirs, value])] })
+      }
+      const browseDir = async () => {
+        setBusy(true)
+        try {
+          const picked = await pickDirectory()
+          if (picked !== undefined) {
+            setDirInput('')
+            await save({ extraSkillDirs: [...new Set([...settings.extraSkillDirs, picked])] })
+          }
+        } catch (failure) {
+          setError(String(failure.message || failure))
+        } finally {
+          setBusy(false)
+        }
       }
       const removeDir = (value) => void save({ extraSkillDirs: settings.extraSkillDirs.filter((entry) => entry !== value) })
       const updateServers = (next) => void save({ mcpServers: next })
@@ -438,7 +476,7 @@ window.__ModuleLoader__.load({
           'section',
           { className: 'dsh-omo-block' },
           h('div', { className: 'dsh-omo-block-head' }, zh ? '技能' : 'Skills'),
-          h('div', { className: 'dsh-omo-hint' }, zh ? '关闭后该技能不再出现在会话目录里；新增目录用于加载外部 SKILL.md。' : 'Disabled skills leave the session catalog; extra directories load external SKILL.md bundles.'),
+          h('div', { className: 'dsh-omo-hint' }, zh ? '关闭后该技能不再出现在会话目录里；「浏览…」选择本地目录，或直接粘贴路径后点「添加目录」。' : 'Disabling removes a skill from the session catalog. Use Browse… for a local folder, or paste a path and Add.'),
           skills.map((skill) =>
             h(
               'div',
@@ -464,6 +502,7 @@ window.__ModuleLoader__.load({
               value: dirInput,
               onChange: (event) => setDirInput(event.target.value),
             }),
+            h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: () => void browseDir() }, zh ? '浏览…' : 'Browse…'),
             h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: addDir }, zh ? '添加目录' : 'Add'),
           ),
           settings.extraSkillDirs.map((value) =>
@@ -528,6 +567,7 @@ window.__ModuleLoader__.load({
     OmoSettingsSection.__test = { ROUTE_SETTINGS, ROUTE_SKILLS, ROUTE_PROBE }
 
     function apply(ctx) {
+      hostContext = ctx
       ctx.effect(() => mountStyles(), 'dsh-plugin-omo: mode styles')
       ctx.slots.inject(SLOT, () => {
         ctx.slots.register(

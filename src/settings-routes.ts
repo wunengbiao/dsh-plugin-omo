@@ -2,6 +2,7 @@
  * HTTP surface behind the omo settings page: read and patch the settings file, list the
  * skills the provider would serve, and probe one MCP server.
  */
+import { statSync } from "node:fs"
 import type { HostLogger } from "./host.ts"
 import { probeMcpServer } from "./mcp-probe.ts"
 import { type McpServerSpec, type OmoSettings, type SettingsStore, normalizeSettings } from "./omo-settings-store.ts"
@@ -76,6 +77,20 @@ export function catalogOptionsFrom(settings: OmoSettings, options: SettingsRoute
   }
 }
 
+/** Reject a patch that points the provider at a path that cannot hold skills. */
+function validateExtraDirs(dirs: readonly string[]): string | undefined {
+  for (const dir of dirs) {
+    let stats
+    try {
+      stats = statSync(dir)
+    } catch {
+      return "skill directory does not exist: " + dir
+    }
+    if (!stats.isDirectory()) return "skill path is not a directory: " + dir
+  }
+  return undefined
+}
+
 /** Create the three handlers bound to one store. */
 export function createSettingsRoutes(options: SettingsRoutesOptions): SettingsRoutes {
   const settingsState = (): Record<string, unknown> => ({
@@ -98,6 +113,11 @@ export function createSettingsRoutes(options: SettingsRoutesOptions): SettingsRo
         const raw = await readBody(request)
         const parsed = JSON.parse(raw === "" ? "{}" : raw) as Partial<OmoSettings>
         const next = normalizeSettings({ ...options.store.read(), ...parsed })
+        const directoryError = validateExtraDirs(next.extraSkillDirs)
+        if (directoryError !== undefined) {
+          sendJson(response, 400, { error: directoryError })
+          return
+        }
         options.store.write(next)
         options.logger?.info("[dsh-plugin-omo] settings saved to " + options.store.path())
         sendJson(response, 200, { path: options.store.path(), settings: next })

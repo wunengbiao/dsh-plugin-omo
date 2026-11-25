@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.3.2
+
+- **浏览…** opens the real directory picker for skill directories: the desktop bridge
+  (`globalThis.__DSH_DIRECTORY_PICKER__`) first, then the workspace picker; when neither exists the page says so and
+  the paste-and-Add path still works. Previously the button only stored whatever text was typed, which read as a
+  button that did nothing.
+- The settings route now validates `extraSkillDirs`: a missing path or a file is rejected with a message naming it,
+  instead of silently producing an empty catalog entry.
+
 ## 0.3.1
 
 - The settings page is titled **OMO 配置** (was lowercase `omo 配置`), in the nav row and in the page header.
