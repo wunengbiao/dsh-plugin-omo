@@ -431,7 +431,7 @@ window.__ModuleLoader__.load({
       return h(
         'div',
         { className: 'dsh-omo-page' },
-        h('div', null, h('div', { className: 'dsh-omo-block-head' }, zh ? 'omo 配置' : 'omo settings'), h('div', { className: 'dsh-omo-hint' }, path)),
+        h('div', null, h('div', { className: 'dsh-omo-block-head' }, zh ? 'OMO 配置' : 'OMO settings'), h('div', { className: 'dsh-omo-hint' }, path)),
         error === '' ? null : h('div', { className: 'dsh-omo-bad' }, error),
 
         h(
@@ -547,7 +547,7 @@ window.__ModuleLoader__.load({
             name: 'settings.section',
             id: 'omo-settings',
             order: 90,
-            label: () => 'omo 配置',
+            label: () => 'OMO 配置',
           },
           OmoSettingsSection,
         ),

@@ -28,6 +28,21 @@ export interface OmoSettings {
 
 export const EMPTY_SETTINGS: OmoSettings = { disabledSkills: [], extraSkillDirs: [], mcpServers: [] }
 
+/** Seeded on first run: CodeGraph's stdio MCP server, the code-intelligence backend omo users already run. */
+export const DEFAULT_MCP_SERVERS: readonly McpServerSpec[] = [
+  {
+    id: "codegraph",
+    name: "CodeGraph",
+    transport: "stdio",
+    command: "codegraph",
+    args: ["serve", "--mcp"],
+    enabled: true,
+  },
+]
+
+/** Settings a fresh install starts from; an existing file always wins. */
+export const DEFAULT_SETTINGS: OmoSettings = { ...EMPTY_SETTINGS, mcpServers: DEFAULT_MCP_SERVERS }
+
 export function settingsPath(): string {
   const home = process.env.DSH_HOME !== undefined && process.env.DSH_HOME !== "" ? process.env.DSH_HOME : join(homedir(), ".dsh")
   return join(home, "omo", "settings.json")
@@ -94,7 +109,8 @@ export function createSettingsStore(filePath: string = settingsPath()): Settings
 
   const read = (): OmoSettings => {
     if (!existsSync(filePath)) {
-      cached = EMPTY_SETTINGS
+      // A fresh install still shows the seeded CodeGraph server; saving persists it.
+      cached = DEFAULT_SETTINGS
       cachedMtime = -1
       return cached
     }

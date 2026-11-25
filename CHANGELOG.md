@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.3.1
+
+- The settings page is titled **OMO 配置** (was lowercase `omo 配置`), in the nav row and in the page header.
+- A fresh install now seeds the **CodeGraph** MCP server (`codegraph serve --mcp`, stdio) into
+  `$DSH_HOME/omo/settings.json`, so the MCP panel lists it out of the box and **测试** performs a real handshake with
+  the installed CodeGraph CLI. Deleting it persists; the seed only applies while no settings file exists.
+
 ## 0.3.0
 
 - New settings page **omo 配置** (first-level nav next to 通用设置/模型/内置插件/Agent 预设), with two panels:
