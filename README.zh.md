@@ -98,7 +98,7 @@ patch 层再重启应用：
 ## 技能为什么留在拥有它们的仓库里
 
 `skills/` 是 `script/build-dsh-plugin.ts` 从 `packages/shared-skills/skills` 生成的，manifest 里记录每个文件的
-sha256。`bun run build:check` 会重新 stage 并比对，一旦副本漂移就失败，所以这个插件不可能悄悄发布一份过期的技能副本。
+sha256。`bun run build:check` 会 stage 到临时目录再与已提交的 manifest 比对：正文变化、新增技能、手改过的副本都会指出具体路径并失败，所以这个插件不可能悄悄发布一份过期的技能副本。
 
 ## 开发
 

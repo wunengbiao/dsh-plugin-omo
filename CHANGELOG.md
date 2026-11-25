@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.7
+
+- `build:check` now actually detects drift. It used to stage the source into the package and then validate that
+  staging, which always agrees with itself, so an edited source skill still reported "current". The check stages into
+  a scratch directory and compares the resulting manifest with the committed one, plus the files on disk: a changed
+  body, a new skill, a removed skill, and a hand-edited staged copy each fail with the offending path.
+
 ## 0.1.6
 
 - End the frontmatter only at a column-0 fence. A block scalar containing an indented `---` (a literal rule line
