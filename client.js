@@ -1,12 +1,12 @@
 /**
  * Client half of dsh-plugin-omo: the always-mode selector.
  *
- * Renders one native select in the composer bar, left of the permission control,
- * listing the four omo primary agents plus Native ("no mode"). The selection is
- * stored by the host plugin and injected as a per-session system prompt
- * directive, so it applies to every turn while it is set.
+ * Renders one trigger in the composer bar and a popover menu styled like the permission
+ * control (same panel, row, hover and checkmark treatment), listing Native plus the four omo
+ * primary agents. A CSS order rule moves the permission group to the right of this control.
  *
- * Loaded through window.__ModuleLoader__ and only depends on the shared React.
+ * The selection is stored by the host plugin and injected as a per-session system prompt
+ * directive, so it applies to every turn while it is set.
  */
 window.__ModuleLoader__.load({
   id: 'dsh-plugin-omo',
@@ -25,27 +25,42 @@ window.__ModuleLoader__.load({
       prometheus: 'Prometheus',
       atlas: 'Atlas',
     }
-    const STYLE = {
-      appearance: 'none',
-      background: 'transparent',
-      border: 'none',
-      borderRadius: 'var(--dsw-radius-sm, 6px)',
-      color: 'var(--dsw-alias-label-secondary, #81858c)',
-      cursor: 'pointer',
-      fontFamily: 'inherit',
-      fontSize: '13px',
-      fontWeight: 500,
-      height: '28px',
-      lineHeight: '20px',
-      maxWidth: '160px',
-      outline: 'none',
-      padding: '0 20px 0 8px',
-      whiteSpace: 'nowrap',
-      backgroundImage:
-        "url(\"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12' fill='none'%3E%3Cpath d='M3 4.5L6 7.5L9 4.5' stroke='%2381858C' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E\")",
-      backgroundPosition: 'right 4px center',
-      backgroundRepeat: 'no-repeat',
-      backgroundSize: '12px 12px',
+    const ROOT_ATTR = 'data-omo-mode-root'
+    const STYLE_ID = 'dsh-plugin-omo/mode.module.css'
+    const CSS = [
+      '[' + ROOT_ATTR + ']{order:1;display:inline-flex;align-items:center}',
+      /* The permission group is the sibling right before this control; order puts it on the right. */
+      '*:has(> [' + ROOT_ATTR + ']) > *:has(+ [' + ROOT_ATTR + ']){order:2}',
+      '.dsh-omo-trigger{display:inline-flex;align-items:center;gap:6px;padding:1px 8px;height:28px;border:none;',
+      'border-radius:var(--dsw-radius-sm);background:transparent;color:var(--dsw-alias-label-tertiary);',
+      'font-family:inherit;font-size:13px;font-weight:500;line-height:20px;white-space:nowrap;cursor:pointer}',
+      '.dsh-omo-trigger:hover,.dsh-omo-trigger[aria-expanded=true]{background:var(--dsw-alias-interactive-bg-hover);',
+      'color:var(--dsw-alias-label-secondary)}',
+      '.dsh-omo-chevron{display:inline-flex;flex:none;opacity:.8}',
+      '.dsh-omo-panel{position:fixed;z-index:1100;box-sizing:border-box;min-width:184px;max-width:min(264px,100vw - 24px);',
+      'padding:6px;border-radius:var(--dsw-radius-lg);background:var(--dsw-specific-menu);',
+      'backdrop-filter:var(--dsw-menu-backdrop-filter);box-shadow:var(--dsw-elevation-prominent);',
+      'border:1px solid var(--dsw-alias-border-l1);color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}',
+      '.dsh-omo-row{display:flex;align-items:center;gap:8px;width:100%;padding:6px 8px;border:none;background:transparent;',
+      'border-radius:var(--dsw-radius-md);color:inherit;font-family:inherit;font-size:inherit;text-align:left;cursor:pointer}',
+      '.dsh-omo-row:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsh-omo-row[data-active=true]{color:var(--dsw-alias-label-primary)}',
+      '.dsh-omo-glyph{display:inline-flex;flex:none;place-items:center;width:16px;height:16px;color:var(--dsw-alias-label-secondary)}',
+      '.dsh-omo-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
+      '.dsh-omo-check{display:inline-flex;flex:none;width:16px;height:16px;place-items:center;color:var(--dsw-alias-label-primary)}',
+    ].join('')
+
+    function mountStyles() {
+      if (typeof document === 'undefined') return () => undefined
+      if (document.querySelector('style[data-plugin-css="' + STYLE_ID + '"]') !== null) return () => undefined
+      const tag = document.createElement('style')
+      tag.dataset.plugin = 'dsh-plugin-omo'
+      tag.dataset.pluginCss = STYLE_ID
+      tag.textContent = CSS
+      document.head.appendChild(tag)
+      return () => {
+        tag.remove()
+      }
     }
 
     function isZh() {
@@ -78,9 +93,34 @@ window.__ModuleLoader__.load({
       return MODES.includes(payload.mode) ? payload.mode : mode
     }
 
+    const SVG = {
+      mode: 'M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm0 1.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm2.7 3.2-3.4 3.4-1.6-1.6',
+      chevron: 'M3 4.5 6 7.5 9 4.5',
+      check: 'M2.5 6.2 5 8.7l4.5-4.5',
+    }
+
+    function icon(path, size, width) {
+      return h(
+        'svg',
+        { viewBox: '0 0 ' + size + ' ' + size, width: size, height: size, 'aria-hidden': 'true', fill: 'none' },
+        h('path', {
+          d: path,
+          stroke: 'currentColor',
+          strokeWidth: width || 1.5,
+          strokeLinecap: 'round',
+          strokeLinejoin: 'round',
+        }),
+      )
+    }
+
     function ModeSelect({ sessionId }) {
       const [mode, setMode] = React.useState('native')
-      const [pending, setPending] = React.useState(false)
+      const [open, setOpen] = React.useState(false)
+      const [anchor, setAnchor] = React.useState(null)
+      const rootRef = React.useRef(null)
+      const panelRef = React.useRef(null)
+      const buttonRef = React.useRef(null)
+
       React.useEffect(() => {
         let alive = true
         readMode(sessionId)
@@ -93,44 +133,111 @@ window.__ModuleLoader__.load({
         }
       }, [sessionId])
 
-      const onChange = React.useCallback(
-        (event) => {
-          const next = event.target.value
+      React.useEffect(() => {
+        if (!open) return undefined
+        const onPointerDown = (event) => {
+          const target = event.target
+          if (rootRef.current?.contains(target) || panelRef.current?.contains(target)) return
+          setOpen(false)
+        }
+        const onKeyDown = (event) => {
+          if (event.key === 'Escape') {
+            setOpen(false)
+            buttonRef.current?.focus?.()
+          }
+        }
+        document.addEventListener('pointerdown', onPointerDown, true)
+        document.addEventListener('keydown', onKeyDown)
+        return () => {
+          document.removeEventListener('pointerdown', onPointerDown, true)
+          document.removeEventListener('keydown', onKeyDown)
+        }
+      }, [open])
+
+      const toggle = React.useCallback(() => {
+        setOpen((current) => {
+          if (current) return false
+          const rect = buttonRef.current?.getBoundingClientRect?.()
+          if (rect) {
+            const width = 200
+            const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12))
+            setAnchor({ left, bottom: window.innerHeight - rect.top + 8, width })
+          }
+          return true
+        })
+      }, [])
+
+      const choose = React.useCallback(
+        (next) => {
           setMode(next)
-          setPending(true)
+          setOpen(false)
           writeMode(sessionId, next)
             .then((stored) => setMode(stored))
             .catch(() => {})
-            .finally(() => setPending(false))
         },
         [sessionId],
       )
 
       const zh = isZh()
+      const label = LABELS[mode]
       return h(
-        'label',
-        {
-          title: zh ? '始终模式：选中后对该会话每一轮都生效' : 'Always mode: applies to every turn of this session',
-          style: { display: 'inline-flex', alignItems: 'center', gap: '2px' },
-        },
-        h('span', { 'aria-hidden': true, style: { display: 'none' } }, zh ? '始终模式' : 'Always mode'),
+        'div',
+        { ref: rootRef, [ROOT_ATTR]: mode },
         h(
-          'select',
+          'button',
           {
-            'aria-label': zh ? '始终模式' : 'Always mode',
-            'data-omo-mode': mode,
-            value: mode,
-            disabled: pending,
-            onChange,
-            style: STYLE,
+            ref: buttonRef,
+            type: 'button',
+            className: 'dsh-omo-trigger',
+            'aria-haspopup': 'menu',
+            'aria-expanded': open,
+            'aria-label': (zh ? '始终模式：' : 'Always mode: ') + label,
+            title: zh ? '始终模式：选中后对该会话每一轮都生效' : 'Always mode: applies to every turn of this session',
+            onClick: toggle,
           },
-          MODES.map((id) => h('option', { key: id, value: id }, LABELS[id])),
+          h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(SVG.mode, 16)),
+          h('span', { className: 'dsh-omo-label' }, label),
+          h('span', { className: 'dsh-omo-chevron', 'aria-hidden': 'true' }, icon(SVG.chevron, 12)),
         ),
+        open && anchor !== null
+          ? h(
+              'div',
+              {
+                ref: panelRef,
+                className: 'dsh-omo-panel',
+                role: 'menu',
+                'aria-label': zh ? '始终模式' : 'Always mode',
+                style: { left: anchor.left + 'px', bottom: anchor.bottom + 'px', width: anchor.width + 'px' },
+              },
+              MODES.map((id) =>
+                h(
+                  'button',
+                  {
+                    key: id,
+                    type: 'button',
+                    role: 'menuitemradio',
+                    'aria-checked': id === mode,
+                    'data-active': id === mode,
+                    className: 'dsh-omo-row',
+                    onClick: () => choose(id),
+                  },
+                  h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(SVG.mode, 16)),
+                  h('span', { className: 'dsh-omo-label' }, LABELS[id]),
+                  h(
+                    'span',
+                    { className: 'dsh-omo-check', 'aria-hidden': 'true' },
+                    id === mode ? icon(SVG.check, 12, 1.8) : null,
+                  ),
+                ),
+              ),
+            )
+          : null,
       )
     }
-    ModeSelect.__test = { MODES, LABELS, requestUrl }
+    ModeSelect.__test = { MODES, LABELS, requestUrl, CSS }
 
     function apply(ctx) {
+      ctx.effect(() => mountStyles(), 'dsh-plugin-omo: mode styles')
       ctx.slots.inject(SLOT, () => {
         ctx.slots.register(
           {
