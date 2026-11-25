@@ -1,5 +1,17 @@
 # Changelog
 
+## 0.4.0
+
+- **MCP tools are now real session tools.** A third entry (`./mcp`, `inject: ["tools"]`) starts every enabled stdio
+  server from the settings file, completes `initialize` + `tools/list`, and registers each tool as
+  `<server>__<tool>` with the server's JSON Schema as its parameters. Execution forwards through `tools/call` and
+  returns the flattened text content.
+- A server that fails to start, exits, or exceeds its timeout is logged and skipped: the rest of the pack and the
+  other servers keep working, and the failure is reported in the settings payload.
+- The settings page shows how many tools each server registered (`已注册 N`), and the page payload carries
+  `registered.servers` / `registered.failures`.
+- MCP calls are registered as non-concurrency-safe, so two mutating tools never run in parallel.
+
 ## 0.3.2
 
 - **浏览…** opens the real directory picker for skill directories: the desktop bridge

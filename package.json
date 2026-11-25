@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-omo",
-  "version": "0.3.2",
+  "version": "0.4.0",
   "description": "DeepSeek Harness plugin: the oh-my-openagent (omo) cross-harness skills as a native DSH SkillProvider, plus an always-mode selector for the four omo primary agents",
   "type": "module",
   "main": "index.js",
@@ -9,7 +9,8 @@
     "./ui": "./lib/ui.js",
     "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
-    "./package.json": "./package.json"
+    "./package.json": "./package.json",
+    "./mcp": "./lib/mcp.js"
   },
   "files": [
     "index.js",

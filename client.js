@@ -355,6 +355,7 @@ window.__ModuleLoader__.load({
       const zh = isZh()
       const [path, setPath] = React.useState('')
       const [settings, setSettings] = React.useState(EMPTY_SETTINGS)
+      const [registered, setRegistered] = React.useState({ servers: [], failures: [] })
       const [skills, setSkills] = React.useState([])
       const [probes, setProbes] = React.useState({})
       const [error, setError] = React.useState('')
@@ -367,6 +368,7 @@ window.__ModuleLoader__.load({
           const [settingsPayload, skillsPayload] = await Promise.all([jsonFetch(ROUTE_SETTINGS), jsonFetch(ROUTE_SKILLS)])
           setPath(settingsPayload.path || '')
           setSettings(settingsPayload.settings || EMPTY_SETTINGS)
+          setRegistered(settingsPayload.registered || { servers: [], failures: [] })
           setSkills(skillsPayload.items || [])
           setError('')
         } catch (failure) {
@@ -523,11 +525,13 @@ window.__ModuleLoader__.load({
           h('div', { className: 'dsh-omo-hint' }, zh ? '目前支持 stdio 传输；HTTP 会在后续版本支持。保存后可用「测试」做一次真实握手。' : 'stdio only for now; HTTP lands later. Save, then Test runs a real handshake.'),
           settings.mcpServers.map((server) => {
             const result = probes[server.id]
+            const live = (registered.servers || []).find((entry) => entry.server === server.id)
             return h(
               'div',
               { key: server.id, className: 'dsh-omo-row-item' },
               h('span', { className: 'dsh-omo-name' }, server.name || server.id),
               h('span', { className: 'dsh-omo-chip' }, server.transport),
+              live === undefined ? null : h('span', { className: 'dsh-omo-chip dsh-omo-ok' }, (live.tools || []).length + (zh ? ' 个已注册' : ' registered')),
               h(
                 'span',
                 { className: 'dsh-omo-grow ' + (result === undefined ? '' : result.pending ? '' : result.ok ? 'dsh-omo-ok' : 'dsh-omo-bad') },

@@ -113,8 +113,28 @@ export interface HostSystemPrompt {
   readonly section: (section: HostPromptSection) => () => void
 }
 
+/** One tool definition the harness accepts (mirrors dsh-tools). */
+export interface HostToolDefinition {
+  readonly name: string
+  readonly description: string
+  readonly parameters: unknown
+  readonly output: {
+    readonly schema: unknown
+    readonly render: (args: unknown, value: { text: string }) => unknown
+  }
+  readonly execute: (args: unknown, context?: unknown) => Promise<{ text: string }>
+  readonly isConcurrencySafe?: (args: unknown) => boolean
+}
+
+/** Tool registry service. */
+export interface HostToolRegistry {
+  readonly register: (definition: HostToolDefinition, options?: unknown) => () => void
+}
+
 /** The Cordis plugin context, narrowed to the services this plugin injects. */
 export interface HostContext {
+  /** Present in the omo-mcp entry; omitted in the skills-only entry. */
+  readonly tools?: HostToolRegistry
   readonly skills: HostSkillRegistry
   readonly logger?: HostLogger
   readonly effect?: (execute: () => () => void, label?: string) => unknown

@@ -1,8 +1,11 @@
 # Bundle patch layer: load this package's plugin entries through the Cordis loader.
-# "omo" serves the skills and the always-mode directive; "omo-ui" serves the mode route and
-# injects webServer, so a headless composition simply leaves that row pending.
+# "omo"     skills + the always-mode directive
+# "omo-ui"  the mode route and the settings page routes (injects webServer, pending in headless)
+# "omo-mcp" starts enabled MCP servers and registers their tools (injects tools)
 - insert:
     - id: omo
       name: dsh-plugin-omo
     - id: omo-ui
       name: dsh-plugin-omo/ui
+    - id: omo-mcp
+      name: dsh-plugin-omo/mcp

@@ -5,6 +5,7 @@
 import { statSync } from "node:fs"
 import type { HostLogger } from "./host.ts"
 import { probeMcpServer } from "./mcp-probe.ts"
+import { getMcpStatus } from "./mcp-status.ts"
 import { type McpServerSpec, type OmoSettings, type SettingsStore, normalizeSettings } from "./omo-settings-store.ts"
 import { type CatalogOptions, listCandidates } from "./skill-catalog.ts"
 
@@ -96,6 +97,7 @@ export function createSettingsRoutes(options: SettingsRoutesOptions): SettingsRo
   const settingsState = (): Record<string, unknown> => ({
     path: options.store.path(),
     settings: options.store.read(),
+    registered: getMcpStatus(),
   })
 
   return {
