@@ -1,4 +1,8 @@
-# Bundle patch layer: load this package's plugin entry through the Cordis loader.
+# Bundle patch layer: load this package's plugin entries through the Cordis loader.
+# "omo" serves the skills and the always-mode directive; "omo-ui" serves the mode route and
+# injects webServer, so a headless composition simply leaves that row pending.
 - insert:
     - id: omo
       name: dsh-plugin-omo
+    - id: omo-ui
+      name: dsh-plugin-omo/ui

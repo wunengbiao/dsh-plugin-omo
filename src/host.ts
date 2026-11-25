@@ -88,9 +88,38 @@ export interface HostSkillRegistry {
   readonly registerProvider: (create: (control: HostProviderControl) => HostSkillProvider) => () => void
 }
 
+/** One web server route the plugin may register. */
+export interface HostRoute {
+  readonly kind: "exact" | "prefix"
+  readonly path: string
+  readonly handler: (request: never, response: never) => void | Promise<void>
+}
+
+/** HTTP carrier for same-origin client calls. */
+export interface HostWebServer {
+  readonly register: (route: HostRoute) => () => void
+}
+
+/** One contributed system prompt section. */
+export interface HostPromptSection {
+  readonly name: string
+  readonly order: number
+  readonly text: string | ((context: unknown) => string)
+  readonly interpolate?: boolean
+}
+
+/** Prompt assembly service, available in some compositions only. */
+export interface HostSystemPrompt {
+  readonly section: (section: HostPromptSection) => () => void
+}
+
 /** The Cordis plugin context, narrowed to the services this plugin injects. */
 export interface HostContext {
   readonly skills: HostSkillRegistry
   readonly logger?: HostLogger
-  readonly effect?: (execute: () => () => void) => void
+  readonly effect?: (execute: () => () => void, label?: string) => unknown
+  /** Optional: a headless composition may omit the web server. */
+  readonly webServer?: HostWebServer
+  /** Cordis service lookup for optional dependencies. */
+  readonly get?: (name: string) => unknown
 }

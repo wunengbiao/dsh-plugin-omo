@@ -5,7 +5,8 @@
 import { existsSync } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
-import type { HostContext, HostSkillProvider } from "./host.ts"
+import type { HostContext, HostSkillProvider, HostSystemPrompt } from "./host.ts"
+import { modeDirective, sharedModeStore, type ModeStore } from "./mode-store.ts"
 import { createOmoProvider } from "./provider.ts"
 import { BUNDLED_SKILL_RANK, countSkillDocuments } from "./skill-catalog.ts"
 import { createRootWatcher } from "./skill-watcher.ts"
@@ -102,7 +103,22 @@ export function normalizeOmoConfig(config: unknown): NormalizedOmoConfig {
 
 export interface OmoPluginInstance {
   readonly provider: HostSkillProvider
+  readonly modeStore: ModeStore
   readonly dispose: () => void
+}
+
+const MODE_SECTION_ORDER = 860
+
+/** Resolve the assembling session from a prompt assembly context. */
+function sessionIdOf(context: unknown): string | undefined {
+  if (typeof context !== "object" || context === null) return undefined
+  const agent = (context as { agent?: unknown }).agent
+  if (typeof agent !== "object" || agent === null) return undefined
+  const session = (agent as { session?: unknown }).session
+  if (typeof session === "string") return session
+  if (session === undefined || session === null) return undefined
+  const text = String(session)
+  return text === "" ? undefined : text
 }
 
 /** Register the provider; the returned disposer unregisters it. */
@@ -137,8 +153,27 @@ export function apply(ctx: HostContext, config?: unknown): OmoPluginInstance {
   ctx.logger?.info(
     "[dsh-plugin-omo] registered provider " + normalized.providerName + " over " + documentCount + " skill documents",
   )
+
+  // Always mode: the store is a process singleton shared with the ./ui entry, so the directive
+  // follows whatever the dropdown wrote while this plugin never needs the web server.
+  const modeStore = sharedModeStore()
+  const systemPrompt = ctx.get?.("systemPrompt") as HostSystemPrompt | undefined
+  if (systemPrompt !== undefined && ctx.effect !== undefined) {
+    ctx.effect(
+      () =>
+        systemPrompt.section({
+          name: "omo-mode",
+          order: MODE_SECTION_ORDER,
+          text: (context: unknown) => modeDirective(modeStore.get(sessionIdOf(context))),
+          interpolate: false,
+        }),
+      "dsh-plugin-omo: always mode directive",
+    )
+  }
+
   return {
     provider,
+    modeStore,
     dispose: () => {
       watcher.stop()
       dispose()

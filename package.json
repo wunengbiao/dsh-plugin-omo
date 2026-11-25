@@ -1,11 +1,13 @@
 {
   "name": "dsh-plugin-omo",
-  "version": "0.1.7",
-  "description": "DeepSeek Harness plugin: ships the oh-my-openagent (omo) cross-harness skills as a native DSH SkillProvider | DeepSeek Harness 插件：把 oh-my-openagent 的跨 harness 技能以 DSH 原生 SkillProvider 形式提供",
+  "version": "0.2.0",
+  "description": "DeepSeek Harness plugin: the oh-my-openagent (omo) cross-harness skills as a native DSH SkillProvider, plus an always-mode selector for the four omo primary agents",
   "type": "module",
   "main": "index.js",
   "exports": {
     ".": "./index.js",
+    "./ui": "./lib/ui.js",
+    "./client": "./client.js",
     "./cordis.patch.yml": "./cordis.patch.yml",
     "./package.json": "./package.json"
   },
@@ -13,6 +15,7 @@
     "index.js",
     "lib",
     "skills",
+    "client.js",
     "cordis.patch.yml",
     "icon.svg",
     "README.md",
@@ -21,7 +24,7 @@
   ],
   "scripts": {
     "build": "bun scripts/build.mjs",
-    "check": "node --check index.js && node --check lib/host.js && node --check lib/skill-document.js && node --check lib/skill-catalog.js && node --check lib/provider.js && node --check lib/plugin.js",
+    "check": "node --check index.js && node --check client.js && node --check lib/host.js && node --check lib/skill-document.js && node --check lib/skill-catalog.js && node --check lib/provider.js && node --check lib/plugin.js && node --check lib/mode-store.js && node --check lib/mode-route.js && node --check lib/ui.js && node --check lib/skill-watcher.js",
     "test": "node --test test/*.test.mjs"
   },
   "engines": {
@@ -59,6 +62,10 @@
       "dshReleases": {
         "0.2.2-rc.1+": "compatible"
       }
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true
     }
   },
   "icon": "icon.svg"

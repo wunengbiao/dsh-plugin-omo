@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.2.0
+
+- Always-mode selector in the composer. A native dropdown renders left of the permission control
+  (`conversation.input.left`) with four choices from the omo primary agents (Sisyphus, Hephaestus, Prometheus, Atlas)
+  plus `Native`, which selects nothing. The choice is stored per session and injected as a system prompt directive, so
+  it applies to every turn while it is set. Host route `/dsh-plugin-omo/mode` serves GET and POST for the client.
+
 ## 0.1.7
 
 - `build:check` now actually detects drift. It used to stage the source into the package and then validate that

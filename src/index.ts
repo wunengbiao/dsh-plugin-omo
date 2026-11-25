@@ -9,6 +9,17 @@ export {
   type NormalizedOmoConfig,
 } from "./plugin.ts"
 export { BUNDLED_SKILL_RANK } from "./skill-catalog.ts"
+export { MODE_ROUTE } from "./mode-route.ts"
+export {
+  DEFAULT_OMO_MODE,
+  OMO_MODES,
+  createModeStore,
+  modeDirective,
+  sharedModeStore,
+  normalizeOmoMode,
+  type ModeStore,
+  type OmoMode,
+} from "./mode-store.ts"
 export { createRootWatcher, type RootWatchFactory, type RootWatcher } from "./skill-watcher.ts"
 export { parseSkillDocument, SKILL_NAME_PATTERN, SkillDocumentError, type SkillDocument } from "./skill-document.ts"
 export type {
