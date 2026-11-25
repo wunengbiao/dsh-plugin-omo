@@ -13,6 +13,7 @@ window.__ModuleLoader__.load({
   factory(require) {
     'use strict'
     const React = require('react')
+    const ReactDOM = require('react-dom')
     const h = React.createElement
 
     const SLOT = 'conversation.input.left'
@@ -164,11 +165,17 @@ window.__ModuleLoader__.load({
             buttonRef.current?.focus?.()
           }
         }
+        /* A fixed panel cannot follow a scrolling composer; closing is cheaper and never lies. */
+        const onDismiss = () => setOpen(false)
         document.addEventListener('pointerdown', onPointerDown, true)
         document.addEventListener('keydown', onKeyDown)
+        window.addEventListener('resize', onDismiss)
+        window.addEventListener('scroll', onDismiss, true)
         return () => {
           document.removeEventListener('pointerdown', onPointerDown, true)
           document.removeEventListener('keydown', onKeyDown)
+          window.removeEventListener('resize', onDismiss)
+          window.removeEventListener('scroll', onDismiss, true)
         }
       }, [open])
 
@@ -178,8 +185,15 @@ window.__ModuleLoader__.load({
           const rect = buttonRef.current?.getBoundingClientRect?.()
           if (rect) {
             const width = 200
+            const gap = 8
             const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12))
-            setAnchor({ left, bottom: window.innerHeight - rect.top + 8, width })
+            /* Both edges come from the trigger, so the panel hugs it without measuring itself. */
+            setAnchor({
+              left,
+              width,
+              bottom: window.innerHeight - rect.top + gap,
+              maxHeight: Math.max(120, rect.top - gap - 12),
+            })
           }
           return true
         })
@@ -217,15 +231,24 @@ window.__ModuleLoader__.load({
           h('span', { className: 'dsh-omo-label' }, label),
           h('span', { className: 'dsh-omo-chevron', 'aria-hidden': 'true' }, icon(SVG.chevron, 12)),
         ),
-        open && anchor !== null
-          ? h(
+        open && anchor !== null && typeof document !== 'undefined'
+          /* Portaled to body: the composer card establishes a containing block for fixed
+             descendants (backdrop-filter/transform), which would push the panel far away. */
+          ? ReactDOM.createPortal(
+              h(
               'div',
               {
                 ref: panelRef,
                 className: 'dsh-omo-panel',
                 role: 'menu',
                 'aria-label': zh ? '始终模式' : 'Always mode',
-                style: { left: anchor.left + 'px', bottom: anchor.bottom + 'px', width: anchor.width + 'px' },
+                style: {
+                  left: anchor.left + 'px',
+                  bottom: anchor.bottom + 'px',
+                  width: anchor.width + 'px',
+                  maxHeight: anchor.maxHeight + 'px',
+                  overflowY: 'auto',
+                },
               },
               MODES.map((id) =>
                 h(
@@ -248,6 +271,8 @@ window.__ModuleLoader__.load({
                   ),
                 ),
               ),
+              ),
+              document.body,
             )
           : null,
       )
