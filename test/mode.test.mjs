@@ -55,7 +55,10 @@ test("the ui entry requires the web server and serves the mode route", async () 
     effect: (execute) => execute(),
   })
   assert.equal(instance.route.path, MODE_ROUTE)
-  assert.deepEqual(routes.map((route) => route.path), [MODE_ROUTE])
+  assert.deepEqual(
+    routes.map((route) => route.path),
+    [MODE_ROUTE, "/dsh-plugin-omo/settings", "/dsh-plugin-omo/skills", "/dsh-plugin-omo/mcp/probe"],
+  )
 
   const response = fakeResponse()
   await routes[0].handler(fakeRequest("POST", MODE_ROUTE, JSON.stringify({ sessionId: "s1", mode: "atlas" })), response)

@@ -49,6 +49,24 @@ window.__ModuleLoader__.load({
       '.dsh-omo-glyph{display:inline-flex;flex:none;place-items:center;width:16px;height:16px;color:var(--dsw-alias-label-secondary)}',
       '.dsh-omo-label{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}',
       '.dsh-omo-check{display:inline-flex;flex:none;width:16px;height:16px;place-items:center;color:var(--dsw-alias-label-primary)}',
+      /* settings page */
+      '.dsh-omo-page{display:flex;flex-direction:column;gap:18px;padding:4px 4px 24px;color:var(--dsw-alias-label-primary);font-size:13px;line-height:20px}',
+      '.dsh-omo-block{display:flex;flex-direction:column;gap:10px;padding:12px;border:1px solid var(--dsw-alias-border-l1);border-radius:var(--dsw-radius-lg);background:var(--dsw-alias-bg-layer-1)}',
+      '.dsh-omo-block-head{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600}',
+      '.dsh-omo-hint{color:var(--dsw-alias-label-tertiary);font-size:12px}',
+      '.dsh-omo-row-item{display:flex;align-items:center;gap:10px;padding:6px 4px;border-radius:var(--dsw-radius-sm)}',
+      '.dsh-omo-row-item:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsh-omo-name{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:12px;flex:none;min-width:160px}',
+      '.dsh-omo-grow{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--dsw-alias-label-tertiary);font-size:12px}',
+      '.dsh-omo-chip{flex:none;padding:0 6px;border-radius:999px;font-size:11px;line-height:18px;background:var(--dsw-alias-interactive-bg-hover);color:var(--dsw-alias-label-tertiary)}',
+      '.dsh-omo-btn{border:1px solid var(--dsw-alias-border-l2);background:transparent;color:inherit;border-radius:var(--dsw-radius-sm);padding:2px 8px;font:inherit;font-size:12px;cursor:pointer}',
+      '.dsh-omo-btn:hover{background:var(--dsw-alias-interactive-bg-hover)}',
+      '.dsh-omo-btn:disabled{opacity:.5;cursor:default}',
+      '.dsh-omo-input{flex:1;min-width:0;padding:3px 8px;border:1px solid var(--dsw-alias-border-l2);border-radius:var(--dsw-radius-sm);background:transparent;color:inherit;font:inherit;font-size:12px}',
+      '.dsh-omo-ok{color:var(--dsw-alias-state-business-primary)}',
+      '.dsh-omo-bad{color:var(--dsw-alias-state-error-primary)}',
+      '.dsh-omo-form{display:grid;grid-template-columns:120px 1fr auto;gap:8px;align-items:center}',
+      '.dsh-omo-form input,.dsh-omo-form textarea{width:100%;box-sizing:border-box}',
     ].join('')
 
     function mountStyles() {
@@ -296,6 +314,219 @@ window.__ModuleLoader__.load({
     }
     ModeSelect.__test = { MODES, LABELS, requestUrl, CSS }
 
+    const ROUTE_SETTINGS = '/dsh-plugin-omo/settings'
+    const ROUTE_SKILLS = '/dsh-plugin-omo/skills'
+    const ROUTE_PROBE = '/dsh-plugin-omo/mcp/probe'
+    const EMPTY_SETTINGS = { disabledSkills: [], extraSkillDirs: [], mcpServers: [] }
+
+    async function jsonFetch(url, init) {
+      const response = await fetch(url, { credentials: 'same-origin', ...init })
+      const payload = await response.json().catch(() => ({}))
+      if (!response.ok) throw new Error(payload.error || 'HTTP ' + response.status)
+      return payload
+    }
+
+    function OmoSettingsIcon() {
+      return icon(GLYPHS.atlas, 16)
+    }
+
+    function OmoSettingsSection() {
+      const zh = isZh()
+      const [path, setPath] = React.useState('')
+      const [settings, setSettings] = React.useState(EMPTY_SETTINGS)
+      const [skills, setSkills] = React.useState([])
+      const [probes, setProbes] = React.useState({})
+      const [error, setError] = React.useState('')
+      const [busy, setBusy] = React.useState(false)
+      const [dirInput, setDirInput] = React.useState('')
+      const [form, setForm] = React.useState({ id: '', command: '', args: '', env: '' })
+
+      const load = React.useCallback(async () => {
+        try {
+          const [settingsPayload, skillsPayload] = await Promise.all([jsonFetch(ROUTE_SETTINGS), jsonFetch(ROUTE_SKILLS)])
+          setPath(settingsPayload.path || '')
+          setSettings(settingsPayload.settings || EMPTY_SETTINGS)
+          setSkills(skillsPayload.items || [])
+          setError('')
+        } catch (failure) {
+          setError(String(failure.message || failure))
+        }
+      }, [])
+
+      React.useEffect(() => {
+        void load()
+      }, [load])
+
+      const save = React.useCallback(
+        async (patch) => {
+          setBusy(true)
+          try {
+            const payload = await jsonFetch(ROUTE_SETTINGS, {
+              method: 'POST',
+              headers: { 'content-type': 'application/json' },
+              body: JSON.stringify(patch),
+            })
+            setPath(payload.path || '')
+            setSettings(payload.settings || EMPTY_SETTINGS)
+            const skillsPayload = await jsonFetch(ROUTE_SKILLS)
+            setSkills(skillsPayload.items || [])
+            setError('')
+          } catch (failure) {
+            setError(String(failure.message || failure))
+          } finally {
+            setBusy(false)
+          }
+        },
+        [],
+      )
+
+      const toggleSkill = (name, enabled) => {
+        const next = enabled
+          ? settings.disabledSkills.filter((entry) => entry !== name)
+          : [...new Set([...settings.disabledSkills, name])]
+        void save({ disabledSkills: next })
+      }
+      const addDir = () => {
+        const value = dirInput.trim()
+        if (value === '') return
+        setDirInput('')
+        void save({ extraSkillDirs: [...new Set([...settings.extraSkillDirs, value])] })
+      }
+      const removeDir = (value) => void save({ extraSkillDirs: settings.extraSkillDirs.filter((entry) => entry !== value) })
+      const updateServers = (next) => void save({ mcpServers: next })
+      const toggleServer = (server, enabled) =>
+        updateServers(settings.mcpServers.map((entry) => (entry.id === server.id ? { ...entry, enabled } : entry)))
+      const removeServer = (server) => updateServers(settings.mcpServers.filter((entry) => entry.id !== server.id))
+      const addServer = () => {
+        const id = form.id.trim()
+        const command = form.command.trim()
+        if (id === '' || command === '') return
+        const env = {}
+        for (const line of form.env.split('\n')) {
+          const index = line.indexOf('=')
+          if (index > 0) env[line.slice(0, index).trim()] = line.slice(index + 1).trim()
+        }
+        const spec = {
+          id,
+          name: id,
+          transport: 'stdio',
+          command,
+          args: form.args.split(/\s+/).filter(Boolean),
+          ...(Object.keys(env).length > 0 ? { env } : {}),
+          enabled: true,
+        }
+        setForm({ id: '', command: '', args: '', env: '' })
+        updateServers([...settings.mcpServers.filter((entry) => entry.id !== id), spec])
+      }
+      const probe = async (server) => {
+        setProbes((current) => ({ ...current, [server.id]: { pending: true } }))
+        try {
+          const payload = await jsonFetch(ROUTE_PROBE + '?id=' + encodeURIComponent(server.id))
+          setProbes((current) => ({ ...current, [server.id]: payload }))
+        } catch (failure) {
+          setProbes((current) => ({ ...current, [server.id]: { ok: false, error: String(failure.message || failure) } }))
+        }
+      }
+
+      return h(
+        'div',
+        { className: 'dsh-omo-page' },
+        h('div', null, h('div', { className: 'dsh-omo-block-head' }, zh ? 'omo 配置' : 'omo settings'), h('div', { className: 'dsh-omo-hint' }, path)),
+        error === '' ? null : h('div', { className: 'dsh-omo-bad' }, error),
+
+        h(
+          'section',
+          { className: 'dsh-omo-block' },
+          h('div', { className: 'dsh-omo-block-head' }, zh ? '技能' : 'Skills'),
+          h('div', { className: 'dsh-omo-hint' }, zh ? '关闭后该技能不再出现在会话目录里；新增目录用于加载外部 SKILL.md。' : 'Disabled skills leave the session catalog; extra directories load external SKILL.md bundles.'),
+          skills.map((skill) =>
+            h(
+              'div',
+              { key: skill.name, className: 'dsh-omo-row-item' },
+              h('span', { className: 'dsh-omo-name' }, skill.name),
+              h('span', { className: 'dsh-omo-chip' }, skill.source),
+              h('span', { className: 'dsh-omo-grow', title: skill.description }, skill.description),
+              h('input', {
+                type: 'checkbox',
+                checked: skill.enabled,
+                disabled: busy,
+                'aria-label': skill.name,
+                onChange: (event) => toggleSkill(skill.name, event.target.checked),
+              }),
+            ),
+          ),
+          h(
+            'div',
+            { className: 'dsh-omo-row-item' },
+            h('input', {
+              className: 'dsh-omo-input',
+              placeholder: zh ? '外部技能目录，例如 /Users/me/skills' : 'Extra skill directory',
+              value: dirInput,
+              onChange: (event) => setDirInput(event.target.value),
+            }),
+            h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: addDir }, zh ? '添加目录' : 'Add'),
+          ),
+          settings.extraSkillDirs.map((value) =>
+            h(
+              'div',
+              { key: value, className: 'dsh-omo-row-item' },
+              h('span', { className: 'dsh-omo-name' }, value),
+              h('span', { className: 'dsh-omo-grow' }),
+              h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: () => removeDir(value) }, zh ? '移除' : 'Remove'),
+            ),
+          ),
+        ),
+
+        h(
+          'section',
+          { className: 'dsh-omo-block' },
+          h('div', { className: 'dsh-omo-block-head' }, zh ? 'MCP 服务' : 'MCP servers'),
+          h('div', { className: 'dsh-omo-hint' }, zh ? '目前支持 stdio 传输；HTTP 会在后续版本支持。保存后可用「测试」做一次真实握手。' : 'stdio only for now; HTTP lands later. Save, then Test runs a real handshake.'),
+          settings.mcpServers.map((server) => {
+            const result = probes[server.id]
+            return h(
+              'div',
+              { key: server.id, className: 'dsh-omo-row-item' },
+              h('span', { className: 'dsh-omo-name' }, server.name || server.id),
+              h('span', { className: 'dsh-omo-chip' }, server.transport),
+              h(
+                'span',
+                { className: 'dsh-omo-grow ' + (result === undefined ? '' : result.pending ? '' : result.ok ? 'dsh-omo-ok' : 'dsh-omo-bad') },
+                result === undefined
+                  ? server.transport === 'stdio'
+                    ? [server.command, (server.args || []).join(' ')].filter(Boolean).join(' ')
+                    : server.url || ''
+                  : result.pending
+                    ? zh ? '连接中…' : 'connecting…'
+                    : result.ok
+                      ? (result.tools || []).length + (zh ? ' 个工具' : ' tools')
+                      : result.error || 'failed',
+              ),
+              h('input', {
+                type: 'checkbox',
+                checked: server.enabled,
+                disabled: busy,
+                'aria-label': server.id,
+                onChange: (event) => toggleServer(server, event.target.checked),
+              }),
+              h('button', { type: 'button', className: 'dsh-omo-btn', onClick: () => void probe(server) }, zh ? '测试' : 'Test'),
+              h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: () => removeServer(server) }, zh ? '删除' : 'Delete'),
+            )
+          }),
+          h(
+            'div',
+            { className: 'dsh-omo-form' },
+            h('input', { className: 'dsh-omo-input', placeholder: zh ? '名称/标识' : 'id', value: form.id, onChange: (event) => setForm({ ...form, id: event.target.value }) }),
+            h('input', { className: 'dsh-omo-input', placeholder: zh ? '命令，例如 npx' : 'command, e.g. npx', value: form.command, onChange: (event) => setForm({ ...form, command: event.target.value }) }),
+            h('button', { type: 'button', className: 'dsh-omo-btn', disabled: busy, onClick: addServer }, zh ? '添加' : 'Add'),
+            h('input', { className: 'dsh-omo-input', placeholder: zh ? '参数，空格分隔' : 'args, space separated', value: form.args, onChange: (event) => setForm({ ...form, args: event.target.value }) }),
+            h('input', { className: 'dsh-omo-input', placeholder: zh ? '环境变量 KEY=VALUE，每行一个' : 'env KEY=VALUE per line', value: form.env, onChange: (event) => setForm({ ...form, env: event.target.value }) }),
+          ),
+        ),
+      )
+    }
+    OmoSettingsSection.__test = { ROUTE_SETTINGS, ROUTE_SKILLS, ROUTE_PROBE }
+
     function apply(ctx) {
       ctx.effect(() => mountStyles(), 'dsh-plugin-omo: mode styles')
       ctx.slots.inject(SLOT, () => {
@@ -309,6 +540,21 @@ window.__ModuleLoader__.load({
           ModeSelect,
         )
       })
+      // A first-level settings page: nav row + body, both keyed by the same id.
+      ctx.slots.inject('settings.section', () =>
+        ctx.slots.register(
+          {
+            name: 'settings.section',
+            id: 'omo-settings',
+            order: 90,
+            label: () => 'omo 配置',
+          },
+          OmoSettingsSection,
+        ),
+      )
+      ctx.slots.inject('settings.section.icon', () =>
+        ctx.slots.register({ name: 'settings.section.icon', id: 'omo-settings', order: 90 }, OmoSettingsIcon),
+      )
     }
 
     return { name: 'dsh-plugin-omo', inject: ['slots'], apply }

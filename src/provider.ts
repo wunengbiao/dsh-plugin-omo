@@ -1,6 +1,6 @@
 /**
  * The SkillProvider the registry calls. Discovery is intentionally uncached: the
- * catalog is 18 small frontmatter reads and the body is read on demand, so there is
+ * catalog is a handful of frontmatter reads and the body is read on demand, so there is
  * no stale snapshot to invalidate when a skill file changes.
  */
 import type {
@@ -12,14 +12,15 @@ import type {
 } from "./host.ts"
 import { type CatalogOptions, listCandidates, loadDefinition } from "./skill-catalog.ts"
 
-export type OmoProviderOptions = CatalogOptions
+/** Resolved per call, so settings edits apply without a restart. */
+export type CatalogOptionsResolver = () => CatalogOptions
 
 /** Create the omo SkillProvider for one registration. */
-export function createOmoProvider(options: OmoProviderOptions, logger?: HostLogger): HostSkillProvider {
+export function createOmoProvider(resolve: CatalogOptionsResolver, logger?: HostLogger): HostSkillProvider {
   return {
-    name: options.providerName,
+    name: resolve().providerName,
     async list(_lookup: HostSkillLookupOptions) {
-      const listing = listCandidates(options)
+      const listing = listCandidates(resolve())
       if (listing.issues.length === 0) return listing.candidates
       for (const issue of listing.issues) {
         logger?.warn("[dsh-plugin-omo] skipped skill document " + issue.documentPath + ": " + issue.message)
@@ -27,7 +28,7 @@ export function createOmoProvider(options: OmoProviderOptions, logger?: HostLogg
       return { candidates: listing.candidates, complete: false }
     },
     async get(candidate: HostSkillCandidate, lookup: HostSkillLookupOptions): Promise<HostSkillDefinition | undefined> {
-      return loadDefinition(candidate, options, lookup)
+      return loadDefinition(candidate, resolve(), lookup)
     },
   }
 }

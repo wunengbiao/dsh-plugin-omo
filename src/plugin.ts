@@ -2,12 +2,13 @@
  * Cordis plugin entry: registers the omo SkillProvider with the harness skill
  * registry and validates the row configuration from cordis.yml.
  */
-import { existsSync } from "node:fs"
+import { existsSync, watch } from "node:fs"
 import { dirname, resolve } from "node:path"
 import { fileURLToPath } from "node:url"
 import type { HostContext, HostSkillProvider, HostSystemPrompt } from "./host.ts"
 import { modeDirective, sharedModeStore, type ModeStore } from "./mode-store.ts"
 import { createOmoProvider } from "./provider.ts"
+import { createSettingsStore, settingsPath as defaultSettingsPath } from "./omo-settings-store.ts"
 import { BUNDLED_SKILL_RANK, countSkillDocuments } from "./skill-catalog.ts"
 import { createRootWatcher } from "./skill-watcher.ts"
 import { SKILL_NAME_PATTERN } from "./skill-document.ts"
@@ -27,6 +28,8 @@ export interface OmoPluginConfig {
   disabled?: string[]
   /** Provider rank; the default sits in the bundled tier so project and user skills win duplicates. */
   rank?: number
+  /** Settings file written by the omo settings page. Defaults to $DSH_HOME/omo/settings.json. */
+  settingsPath?: string
 }
 
 export interface NormalizedOmoConfig {
@@ -34,11 +37,12 @@ export interface NormalizedOmoConfig {
   readonly roots: readonly string[]
   readonly disabled: ReadonlySet<string>
   readonly rank: number
+  readonly settingsPath: string
 }
 
 const DEFAULT_PROVIDER_NAME = "omo"
 const RESERVED_PROVIDER_NAME = "runtime"
-const KNOWN_KEYS = new Set(["providerName", "skillDir", "extraSkillDirs", "disabled", "rank"])
+const KNOWN_KEYS = new Set(["providerName", "skillDir", "extraSkillDirs", "disabled", "rank", "settingsPath"])
 
 function configError(reason: string): Error {
   return new Error("[dsh-plugin-omo] invalid configuration: " + reason)
@@ -80,7 +84,13 @@ function readRank(value: unknown): number {
 /** Validate row configuration. Throws on anything that cannot be honored. */
 export function normalizeOmoConfig(config: unknown): NormalizedOmoConfig {
   if (config === undefined || config === null) {
-    return { providerName: DEFAULT_PROVIDER_NAME, roots: [defaultSkillRoot()], disabled: new Set(), rank: BUNDLED_SKILL_RANK }
+    return {
+      providerName: DEFAULT_PROVIDER_NAME,
+      roots: [defaultSkillRoot()],
+      disabled: new Set(),
+      rank: BUNDLED_SKILL_RANK,
+      settingsPath: defaultSettingsPath(),
+    }
   }
   if (typeof config !== "object" || Array.isArray(config)) throw configError("configuration must be a mapping")
   const record = config as Record<string, unknown>
@@ -98,7 +108,16 @@ export function normalizeOmoConfig(config: unknown): NormalizedOmoConfig {
     if (!SKILL_NAME_PATTERN.test(entry)) throw configError("disabled entry must be kebab-case, received " + entry)
     disabled.add(entry)
   }
-  return { providerName: readProviderName(record.providerName), roots, disabled, rank: readRank(record.rank) }
+  return {
+    providerName: readProviderName(record.providerName),
+    roots,
+    disabled,
+    rank: readRank(record.rank),
+    settingsPath:
+      typeof record.settingsPath === "string" && record.settingsPath.trim() !== ""
+        ? resolve(record.settingsPath)
+        : defaultSettingsPath(),
+  }
 }
 
 export interface OmoPluginInstance {
@@ -124,20 +143,36 @@ function sessionIdOf(context: unknown): string | undefined {
 /** Register the provider; the returned disposer unregisters it. */
 export function apply(ctx: HostContext, config?: unknown): OmoPluginInstance {
   const normalized = normalizeOmoConfig(config)
-  const provider = createOmoProvider(
-    {
-      roots: normalized.roots,
-      disabled: normalized.disabled,
+  const settingsStore = createSettingsStore(normalized.settingsPath)
+  const resolveOptions = (): { roots: readonly string[]; disabled: ReadonlySet<string>; rank: number; providerName: string } => {
+    const settings = settingsStore.read()
+    return {
+      roots: [...normalized.roots, ...settings.extraSkillDirs],
+      disabled: new Set([...normalized.disabled, ...settings.disabledSkills]),
       rank: normalized.rank,
       providerName: normalized.providerName,
-    },
-    ctx.logger,
-  )
+    }
+  }
+  const provider = createOmoProvider(resolveOptions, ctx.logger)
   const watcher = createRootWatcher({ roots: normalized.roots, logger: ctx.logger })
+  let invalidate: (() => void) | undefined
   const dispose = ctx.skills.registerProvider((control) => {
+    invalidate = control.invalidate
     watcher.start(control.invalidate)
     return provider
   })
+  // Settings edits add or hide skills; the registry caches a completed catalog, so nudge it.
+  if (ctx.effect !== undefined) {
+    ctx.effect(() => {
+      let handle: { close: () => void } | undefined
+      try {
+        handle = watch(normalized.settingsPath, () => invalidate?.())
+      } catch {
+        handle = undefined
+      }
+      return () => handle?.close()
+    }, "dsh-plugin-omo: settings watcher")
+  }
   const missingRoots = normalized.roots.filter((rootPath) => !existsSync(rootPath))
   if (missingRoots.length > 0) {
     ctx.logger?.warn("[dsh-plugin-omo] skill roots missing: " + missingRoots.join(", "))

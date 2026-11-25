@@ -1,5 +1,46 @@
 # Changelog
 
+## 0.3.0
+
+- New settings page **omo 配置** (first-level nav next to 通用设置/模型/内置插件/Agent 预设), with two panels:
+  - **技能**: lists every discoverable skill with its source and description, toggles it on or off, and manages extra
+    skill directories. Toggles write `$DSH_HOME/omo/settings.json`; the provider reads it per call and a watcher on the
+    file invalidates the cached catalog, so a toggle takes effect without a restart.
+  - **MCP 服务**: add, enable/disable, delete stdio servers, and **Test** runs a real MCP handshake
+    (`initialize` then `tools/list`) and reports the tool count, the first tool names, or the failure.
+- Host routes: `/dsh-plugin-omo/settings` (GET/POST), `/dsh-plugin-omo/skills`, `/dsh-plugin-omo/mcp/probe`.
+- Limitation, stated up front: this release manages MCP configuration and verifies connectivity, but does not yet
+  register MCP tools into the session; that lands in 0.3.1. HTTP transport is rejected with a clear message.
+
+## 0.2.4
+
+- Each mode has its own icon in the menu and in the trigger: a neutral dot for Native, an ascent mark for Sisyphus, a
+  hammer for Hephaestus, a flame for Prometheus, and a globe for Atlas. The repeated check-in-a-circle glyph is gone;
+  the active row still shows a check on the right.
+- The menu is narrower (176px instead of 200px).
+
+## 0.2.3
+
+- The mode menu no longer floats far from its trigger. It was `position: fixed` without a portal, and the composer card
+  establishes a containing block for fixed descendants (backdrop-filter/transform), so viewport math placed it far up
+  the page. The panel now portals to `document.body` and anchors its bottom edge to the trigger's top edge, with the
+  remaining viewport height as its max height; it also closes on resize or scroll instead of drifting.
+
+## 0.2.2
+
+- Ordering the permission group to the right is now done in the DOM on mount instead of relying only on a CSS
+  sibling selector: a slot may wrap the control in an extra element, which would make `:has(+ …)` miss. The CSS
+  rule stays as a fallback.
+
+## 0.2.1
+
+- The always-mode control now matches the permission control instead of using a native select: same trigger treatment
+  (glyph, label, chevron, hover, expanded state) and the same popover menu (rounded panel, rows with glyphs, checkmark
+  on the active row, Escape and outside-click dismissal).
+- The permission group moves to the right of the mode control, so the order in the composer is
+  `+ | always mode | permission`. The CSS `order` rule keys off the control's own attribute, so it needs no hashed
+  class name from the host bundle.
+
 ## 0.2.0
 
 - Always-mode selector in the composer. A native dropdown renders left of the permission control
