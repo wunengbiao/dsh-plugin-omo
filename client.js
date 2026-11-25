@@ -121,6 +121,24 @@ window.__ModuleLoader__.load({
       const panelRef = React.useRef(null)
       const buttonRef = React.useRef(null)
 
+      // Put this control in front of the permission group. Done in the DOM because the slot may wrap
+      // us in an extra element, which makes a pure CSS sibling selector unreliable.
+      React.useLayoutEffect(() => {
+        const el = rootRef.current
+        if (!el) return undefined
+        const parent = el.parentElement
+        if (!parent) return undefined
+        const row = parent.parentElement ?? parent
+        const self = parent === row ? el : parent
+        self.style.order = '1'
+        const previous = self.previousElementSibling
+        if (previous instanceof HTMLElement) previous.style.order = '2'
+        return () => {
+          self.style.order = ''
+          if (previous instanceof HTMLElement) previous.style.order = ''
+        }
+      }, [])
+
       React.useEffect(() => {
         let alive = true
         readMode(sessionId)
