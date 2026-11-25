@@ -94,23 +94,40 @@ window.__ModuleLoader__.load({
       return MODES.includes(payload.mode) ? payload.mode : mode
     }
 
+    /* One glyph per mode: neutral dot, ascent, forge, fire, globe. */
+    const GLYPHS = {
+      native: ['M8 1.7a6.3 6.3 0 1 0 0 12.6A6.3 6.3 0 0 0 8 1.7Z', 'M8 6.7a1.3 1.3 0 1 0 0 2.6 1.3 1.3 0 0 0 0-2.6Z'],
+      sisyphus: ['M8 1.7a6.3 6.3 0 1 0 0 12.6A6.3 6.3 0 0 0 8 1.7Z', 'M5.3 9.7 8 6.9l2.7 2.8'],
+      hephaestus: ['M4.1 12.3 8.9 7.5', 'M8.5 5.3 10.3 3.5l2.2 2.2-1.8 1.8-2.2-2.2Z'],
+      prometheus: [
+        'M8 14c2.3 0 3.8-1.6 3.8-3.6 0-2.3-2-3.4-2.4-6.3-1.6 1-2.4 2.4-2.4 3.6 0 1-.6 1.4-1.2 1.4-.5 0-.9-.3-1.1-.8-.4.7-.6 1.4-.6 2C4.1 12.4 5.7 14 8 14Z',
+      ],
+      atlas: [
+        'M8 1.7a6.3 6.3 0 1 0 0 12.6A6.3 6.3 0 0 0 8 1.7Z',
+        'M1.8 8h12.4',
+        'M8 1.7c1.9 1.8 2.8 3.9 2.8 6.3s-.9 4.5-2.8 6.3C6.1 12.5 5.2 10.4 5.2 8s.9-4.5 2.8-6.3Z',
+      ],
+    }
     const SVG = {
-      mode: 'M8 1.5a6.5 6.5 0 1 0 0 13 6.5 6.5 0 0 0 0-13Zm0 1.5a5 5 0 1 1 0 10 5 5 0 0 1 0-10Zm2.7 3.2-3.4 3.4-1.6-1.6',
       chevron: 'M3 4.5 6 7.5 9 4.5',
       check: 'M2.5 6.2 5 8.7l4.5-4.5',
     }
 
-    function icon(path, size, width) {
+    function icon(paths, size, width) {
+      const list = Array.isArray(paths) ? paths : [paths]
       return h(
         'svg',
         { viewBox: '0 0 ' + size + ' ' + size, width: size, height: size, 'aria-hidden': 'true', fill: 'none' },
-        h('path', {
-          d: path,
-          stroke: 'currentColor',
-          strokeWidth: width || 1.5,
-          strokeLinecap: 'round',
-          strokeLinejoin: 'round',
-        }),
+        list.map((d, index) =>
+          h('path', {
+            key: index,
+            d,
+            stroke: 'currentColor',
+            strokeWidth: width || 1.4,
+            strokeLinecap: 'round',
+            strokeLinejoin: 'round',
+          }),
+        ),
       )
     }
 
@@ -184,7 +201,7 @@ window.__ModuleLoader__.load({
           if (current) return false
           const rect = buttonRef.current?.getBoundingClientRect?.()
           if (rect) {
-            const width = 200
+            const width = 176
             const gap = 8
             const left = Math.max(12, Math.min(rect.left, window.innerWidth - width - 12))
             /* Both edges come from the trigger, so the panel hugs it without measuring itself. */
@@ -227,7 +244,7 @@ window.__ModuleLoader__.load({
             title: zh ? '始终模式：选中后对该会话每一轮都生效' : 'Always mode: applies to every turn of this session',
             onClick: toggle,
           },
-          h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(SVG.mode, 16)),
+          h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(GLYPHS[mode], 16)),
           h('span', { className: 'dsh-omo-label' }, label),
           h('span', { className: 'dsh-omo-chevron', 'aria-hidden': 'true' }, icon(SVG.chevron, 12)),
         ),
@@ -262,7 +279,7 @@ window.__ModuleLoader__.load({
                     className: 'dsh-omo-row',
                     onClick: () => choose(id),
                   },
-                  h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(SVG.mode, 16)),
+                  h('span', { className: 'dsh-omo-glyph', 'aria-hidden': 'true' }, icon(GLYPHS[id], 16)),
                   h('span', { className: 'dsh-omo-label' }, LABELS[id]),
                   h(
                     'span',
